@@ -28,3 +28,8 @@ macro(list_subdirectories_recursive return_list dir)
     set(${return_list} ${dir_list})
 
 endmacro()
+
+macro(target_include_directories_recursive target dir)
+    list_subdirectories_recursive(include_dirs ${dir})
+    target_include_directories(${target} PRIVATE ${include_dirs})
+endmacro()

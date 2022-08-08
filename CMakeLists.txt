@@ -18,7 +18,9 @@ pkg_search_module(SDL2IMAGE REQUIRED SDL2_image)
 include_directories(${SDL2_INCLUDE_DIRS})
 
 file(GLOB SOURCES
+	"external/tinyxml2/tinyxml2.cpp"
     "external/ksf/*.cpp"
+
 	"source/*.cpp"
 )
 
@@ -26,11 +28,11 @@ add_executable(${PROJECT_NAME}
 	${SOURCES}
 )
 
-list_subdirectories_recursive(include_dirs "external")
-target_include_directories(${PROJECT_NAME} PRIVATE ${include_dirs})
 
-list_subdirectories_recursive(include_dirs "source")
-target_include_directories(${PROJECT_NAME} PRIVATE ${include_dirs})
+target_include_directories_recursive(${PROJECT_NAME} "source")
+target_include_directories_recursive(${PROJECT_NAME} "external/ksf")
+
+target_include_directories(${PROJECT_NAME} PRIVATE "external/tinyxml2")
 
 target_link_directories(${PROJECT_NAME} 
 	PRIVATE ${SDL2_INCLUDE_DIRS}

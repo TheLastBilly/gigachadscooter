@@ -28,6 +28,7 @@ add_executable(${PROJECT_NAME}
 	${SOURCES}
 )
 
+target_include_directories(${PROJECT_NAME} PRIVATE "external")
 
 target_include_directories_recursive(${PROJECT_NAME} "source")
 target_include_directories_recursive(${PROJECT_NAME} "external/ksf")

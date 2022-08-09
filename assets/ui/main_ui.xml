@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui>
+    <name>main menu</name>
+
+    <background>
+        <path>assets/</path>
+    </background>
+
+    <sprite>
+        <name>start button</name>    
+        <img>
+            <path>assets/img/test.gma</path>
+            <width>100</width>
+            <height>700</height>
+        </img>
+    </sprite>
+</ui>

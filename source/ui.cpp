@@ -6,6 +6,11 @@ using namespace gcs::views;
 
 register_logger()
 
+ui* ui::loadUI(const engine::core *engineCore, const tinyxml2::XMLElement* doc)
+{
+    return NULL;
+}
+
 void ui::initialize()
 {
     this->core = getRoot<engine::core>();

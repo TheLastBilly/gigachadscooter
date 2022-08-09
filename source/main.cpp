@@ -9,6 +9,11 @@
 #define _SILENCE_EXPERIMENTAL_FILESYSTEM_DEPRECATION_WARNING
 #include <experimental/filesystem>
 
+static void loadUI(engine::core *engineCore, const std::string& uiPath)
+{
+    
+}
+
 void setupCore(engine::core *engineCore)
 {
     engineCore->setWindowHeight(720);

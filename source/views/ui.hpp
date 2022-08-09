@@ -1,5 +1,7 @@
 #pragma once
 
+#include "tinyxml2/tinyxml2.h"
+
 #include "managers/managers.hpp"
 
 #include "graphics/view.hpp"
@@ -13,8 +15,7 @@ namespace gcs
 		{
 		public:
 			ui(const std::string &name):
-				view(name)
-			{}
+				view(name) {}
 
 			void setup() override;
 			void update(size_t delta) override;
@@ -22,6 +23,8 @@ namespace gcs
 
 			inline engine::core* getCore()
 			{ return this->core; }
+
+			static ui* loadUI(const engine::core *engineCore, const tinyxml2::XMLElement* doc);
 
 		protected:
 			void initialize() override;

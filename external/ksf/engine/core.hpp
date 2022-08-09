@@ -88,6 +88,7 @@ namespace engine
         inline bool getUnloadTextureAfterCleannup() const
         { return unloadTextureAfterCleannup; }
 
+    public:
         static inline std::string getBasePath()
         { return std::string(SDL_GetBasePath()); }
 

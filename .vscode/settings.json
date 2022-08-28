@@ -1,0 +1,15 @@
+{
+    "files.associations": {
+        "sdl.h": "c",
+        "xlib.h": "c",
+        "util.h": "c",
+        "log.h": "c",
+        "*.ipp": "c",
+        "array": "c",
+        "bitset": "c",
+        "string_view": "c",
+        "initializer_list": "c",
+        "utility": "c",
+        "valarray": "c"
+    }
+}

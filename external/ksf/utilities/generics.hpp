@@ -15,6 +15,7 @@ namespace utilities
     register_exception(index_out_of_bounds_error, "requested index is out of bounds");
     register_exception(null_callback_error, "attempting to use null callback");
     register_exception(invalid_path_error, "specified path is not valid");
+    register_exception(invalid_argument, "invalid argument(s) on function call");
 
 #ifdef WIN32
     inline long long getCurrentTimeInMilliseconds()

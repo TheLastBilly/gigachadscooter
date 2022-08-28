@@ -1,5 +1,3 @@
-#pragma once
-
 #include "tinyxml2/tinyxml2.h"
 
 #include "managers/managers.hpp"
@@ -14,6 +12,9 @@ namespace gcs
 		class ui : public graphics::view
 		{
 		public:
+			register_exception(xml_parsing_error, "cannot parse the current xml file");
+
+		public:
 			ui(const std::string &name):
 				view(name) {}
 
@@ -24,7 +25,7 @@ namespace gcs
 			inline engine::core* getCore()
 			{ return this->core; }
 
-			static ui* loadUI(const engine::core *engineCore, const tinyxml2::XMLElement* doc);
+			static ui* loadUI(const engine::core *engineCore, const tinyxml2::XMLElement* element);
 
 		protected:
 			void initialize() override;

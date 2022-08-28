@@ -6,12 +6,13 @@
         <path>assets/</path>
     </background>
 
+    <width>100</width>
+    <height>700</height>
+
     <sprite>
-        <name>start button</name>    
+        <name>start button</name>
         <img>
             <path>assets/img/test.gma</path>
-            <width>100</width>
-            <height>700</height>
         </img>
     </sprite>
 </ui>

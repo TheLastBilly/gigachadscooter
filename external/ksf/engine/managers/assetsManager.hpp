@@ -20,7 +20,7 @@ namespace engine
         public:
             assetsManager(const std::string& name) : genericManager(name) {}
 
-            inline void requestSprite(const std::string& name, const std::string& path)
+            inline void registerSprite(const std::string& name, const std::string& path)
             {
                 spriteQueue.push(std::pair<std::string, std::string>(name, path));
             }

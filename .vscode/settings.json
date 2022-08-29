@@ -10,6 +10,9 @@
         "string_view": "c",
         "initializer_list": "c",
         "utility": "c",
-        "valarray": "c"
-    }
+        "valarray": "c",
+        "socket.h": "c",
+        "pwd.h": "c"
+    },
+    "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.0.0}"
 }

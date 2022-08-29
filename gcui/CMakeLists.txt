@@ -19,9 +19,11 @@ include_directories("${CMAKE_SOURCE_DIR}/..")
 
 add_executable(gcui
     "gcui.c"
+    "graphics.c"
 
     "../log.c"
     "../mema.c"
+    "../comm.c"
 )
 target_link_libraries(gcui
     ${SDL2_LIBRARIES}

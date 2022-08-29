@@ -7,6 +7,8 @@
 #include "log.h"
 #include "util.h"
 
+#define SDL_HARDCODED_DISPLAY               ":4.0"
+
 #define SDL_IMAGE_DEFAULT_FLAGS             (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                   SDL_INIT_VIDEO
 #define SDL_DEFAULT_WINDOW_FLAGS            0
@@ -16,11 +18,9 @@
 
 #define DEFINE_FONT(_f, _p, _s)             [_f] = (font_request_t){.name = #_f, .path = _p, .size = _s}
 
-#define BACKGROUND_COLOR                    0x181A18FF
-
 #define RGBA2SDLCOLOR(c)                    (SDL_Color){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
 
-typedef struct graphics_t
+typedef struct sdl_context_t
 {
     SDL_Window * window;
     SDL_Renderer * renderer;
@@ -45,9 +45,7 @@ typedef struct graphics_t
         int width;
         int height;
     } text;
-} graphics_t;
-
-static graphics_t sdl;
+} sdl_context_t;
 
 typedef struct font_request_t
 {
@@ -56,8 +54,12 @@ typedef struct font_request_t
     int size;
 } font_request_t;
 
+static sdl_context_t sdl;
+
 const font_request_t FONT_REQUESTS[] = {
     DEFINE_FONT(GRAPHICS_FONT_MONOID_28, "Monoid/Monoid-Regular.ttf", 28),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_64, "Monoid/Monoid-Regular.ttf", 64),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128),
 };
 
 static const char *
@@ -80,7 +82,7 @@ get_assets_global_path( const char * path )
 }
 
 int
-graphics_initialize( void )
+graphics_init( void )
 {
     const char * path = NULL;
     int i = 0;
@@ -89,7 +91,9 @@ graphics_initialize( void )
     clear(&sdl);
     gmema_init();
 
-    putenv("DISPLAY=:4.0");
+#ifdef SDL_HARDCODED_DISPLAY
+    putenv("DISPLAY=" SDL_HARDCODED_DISPLAY);
+#endif
 
     if(SDL_Init(SDL_DEFAULT_FLAGS) != 0)
         return -1;
@@ -183,6 +187,17 @@ graphics_set_window_size( int width, int height )
     sdl.screen.width = width;
     sdl.screen.height = height;
 
+    return 0;
+}
+
+int 
+graphics_get_window_size( int *width, int *height )
+{
+    if(width)
+        *width = sdl.screen.width;
+    if(height)
+        *height = sdl.screen.height;
+    
     return 0;
 }
 

@@ -42,18 +42,19 @@
         _file,                                                  \
         TERM_TME "[%s] "                                        \
         TERM_FLE "[%s:%d] "                                     \
-        TERM_FUN "[%s] "                                        \
         TERM_NRM _fmt "%s\n",                                   \
                                                                 \
         _tstr,                                                  \
         __FILENAME__, __LINE__,                                 \
-        __func__,                                               \
         __VA_ARGS__                                             \
     );                                                          \
 }
 
 // Used for logger internals
 #define _FORM_LOG(_color, _name, ...)                           _STD_LOG(stdout, _color "[" _name "]" TERM_NRM " " __VA_ARGS__, "")
+
+// ptr - works as regular printf
+#define prt(...)                                                printf(__VA_ARGS__);
 
 // info - logs regular information, use it as regular printf
 #define inf(...)                                                _FORM_LOG(TERM_INF, "info", __VA_ARGS__)

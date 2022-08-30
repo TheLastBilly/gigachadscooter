@@ -7,29 +7,56 @@
 #include <unistd.h>
 #include <stdlib.h>
 
-#define BACKGROUND_COLOR                    0x181A18FF
+#include "visuals/visual.h"
+
+#define BACKGROUND_COLOR                            0x181A18FF
+
+#define SET_CURRENT_VISUALS(_v)                     \
+{                                                   \
+    visuals.IDs = _v;                               \
+    visuals.len = arrlen(_v);                       \
+}
+
+#define RUN_ON_VISUALS(_v, _f)                      \
+{                                                   \
+    int _i = 0;                                     \
+    for(_i; _i < visuals.len; _i++)                 \
+        visual_get_visual(visuals.IDs[_i])->_f();   \
+}
+
+struct
+{
+    const visual_id_t *IDs;
+    int len;
+} visuals;
+
+static const visual_id_t MAIN_TAB[] =
+{
+    VISUAL_SPEEDOMETER
+};
 
 int 
 main(int argc, char const *argv[])
 {
+    int i = 0;
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
 
-    comm_init(&comm, "/tmp/test.sock");
+    SET_CURRENT_VISUALS(MAIN_TAB);
+
+    RUN_ON_VISUALS(MAIN_TAB, init);
+
     graphics_init();
     while(1)
     {
-        comm_read(&comm, &buffer);
-        graphics_set_background_color(GRAPHICS_HEX2RGBA(BACKGROUND_COLOR));
-        if(buffer.len > 0)
-        {
-            graphics_clear();
-            graphics_draw_text(GRAPHICS_FONT_MONOID_128, -1, -1, GRAPHICS_HEX2RGBA(0xffffffff), buffer.data);
-            graphics_render();
-        }
+        graphics_clear();
+        RUN_ON_VISUALS(MAIN_TAB, draw);
+        graphics_render();
         usleep(100);
     }
     graphics_terminate();
-    comm_destroy(&comm);
+
+    RUN_ON_VISUALS(MAIN_TAB, terminate);
+
     return 0;
 }

@@ -24,6 +24,8 @@ add_executable(gcui
     "../log.c"
     "../mema.c"
     "../comm.c"
+
+    "visuals/speedometer.c"
 )
 target_link_libraries(gcui
     ${SDL2_LIBRARIES}

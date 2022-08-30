@@ -211,6 +211,9 @@ graphics_draw_text( font_id_t font, int x, int y, rgba_t rgba, const char * text
 
     color = RGBA2SDLCOLOR(rgba);
 
+    if(strlen(text) < 1)
+        return 0;
+
     if(font >= _GRAPHICS_FONT_END || font < 0)
     {
         err("unknown font (%d)", font);

@@ -30,6 +30,19 @@ typedef struct rgba_t
     uint8_t r, g, b, a;
 } rgba_t;
 
+typedef struct sprite_t
+{
+    void * data;
+} sprite_t;
+
+typedef struct polygon_t
+{
+    struct
+    {
+        float x, y;
+    } vertices[3];
+} polygon_t;
+
 int graphics_init( void );
 int graphics_terminate( void );
 int graphics_set_window_size( int width, int height );
@@ -38,5 +51,10 @@ int graphics_draw_text(font_id_t font, float x, float y, rgba_t color, const cha
 int graphics_clear( void );
 int graphics_render( void );
 int graphics_set_background_color(rgba_t color);
+int graphics_load_sprite( const char * path, sprite_t * sprite);
+int graphics_render_sprite( float x, float y, float w, float h, sprite_t * sprite );
+int graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color );
+int graphics_rotate_polygons( polygon_t * polygons, int len, float t );
+int graphics_translate_polygons( polygon_t * polygons, int len, float x, float y );
 
 #endif

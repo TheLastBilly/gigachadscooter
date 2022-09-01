@@ -21,6 +21,11 @@
 // calloc using local mema context
 #define lcalloc(nmemb, size)                                    _mema_calloc(&_mema_local, nmemb, size)
 
+// Add a destructor for allocated block. If a destructor is
+// assigned to a block, it will be used instead of free at
+// cleannup
+#define ldestructor(ptr, func)                                  _mema_set_destructor(&_mema_local, ptr, func)
+
 // free using local mema context
 #define lfree(ptr)                                              _mema_free(&_mema_local, ptr)
 
@@ -51,6 +56,11 @@
 // calloc call using global mema context
 #define gcalloc(nmemb, size)                                    _mema_calloc(&_mema_global, nmemb, size)
 
+// Add a destructor for allocated block. If a destructor is
+// assigned to a block, it will be used instead of free at
+// cleannup
+#define gdestructor(ptr, func)                                  _mema_set_destructor(&_mema_global, ptr, func)
+
 // free call using global mema context
 #define gfree(ptr)                                              _mema_free(&_mema_global, ptr)
 
@@ -64,6 +74,8 @@ struct _mema_block
 
     size_t size;
     size_t nmemb;
+
+    void (*destructor)(void *);
 
     struct _mema_block * prev, * next;
 };
@@ -84,6 +96,7 @@ void * _mema_find_block(struct mema_context * ctx, void * ptr);
 struct _mema_block * _allocate_next_block(struct _mema_block *r);
 void * _mema_malloc(struct mema_context * ctx, size_t size);
 void * _mema_calloc(struct mema_context * ctx, size_t nmemb, size_t size);
+void _mema_set_destructor(struct mema_context * ctx, void * ptr, void (*destructor)(void*));
 void _mema_free(struct mema_context * ctx, void *ptr);
 void _mema_free_on_exit();
 void _mema_global_init();

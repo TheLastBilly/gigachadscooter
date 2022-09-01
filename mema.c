@@ -9,6 +9,15 @@ extern int errno;
 static bool initialized = false;
 struct mema_context _mema_global = {0};
 
+static inline void
+free_block_data(struct _mema_block * b)
+{
+    if(b->destructor)
+        b->destructor(b->data);
+    else
+        free(b->data);
+}
+
 // Frees all the elements allocated on mema context
 void
 _mema_free_all(struct mema_context * ctx)
@@ -23,7 +32,7 @@ _mema_free_all(struct mema_context * ctx)
     while(b)
     {
         if(b->data)
-            free(b->data);
+            free_block_data(b);
 
         ob = b;
         b = ob->next;
@@ -138,6 +147,22 @@ _mema_calloc(struct mema_context * ctx, size_t nmemb, size_t size)
     return b->data;
 }
 
+// Assigns a destructor to allocated pointer. Does nothing
+// if ptr is not being managed by mema
+void
+_mema_set_destructor(struct mema_context * ctx, void * ptr, 
+    void (*destructor)(void*))
+{
+    struct _mema_block *b = NULL;
+
+    abort_if_null(ctx);
+    b = _mema_find_block(ctx, ptr);
+    if(!b)
+        return;
+    
+    b->destructor = destructor;
+}
+
 // Frees memory allocated on mema context and deletes
 // allocation from context. If no such ptr was found
 // on ctx, it does nothing
@@ -164,7 +189,7 @@ _mema_free(struct mema_context * ctx, void *ptr)
         ctx->blocks = b->next;
 
     if(b->data)
-        free(b->data);
+        free_block_data(b);
     
     free(b);
 }

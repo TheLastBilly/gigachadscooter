@@ -14,7 +14,9 @@
         "socket.h": "c",
         "pwd.h": "c",
         "memory_resource": "c",
-        "*.tcc": "c"
+        "*.tcc": "c",
+        "sdl_image.h": "c",
+        "sdl_ttf.h": "c"
     },
     "nrf-connect.toolchain.path": "${nrf-connect.toolchain:2.0.0}"
 }

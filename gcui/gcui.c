@@ -45,6 +45,8 @@ main(int argc, char const *argv[])
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
 
+    gmema_init();
+
     SET_CURRENT_VISUALS(MAIN_TAB);
 
     RUN_ON_VISUALS(MAIN_TAB, init);

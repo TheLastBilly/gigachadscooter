@@ -1,5 +1,6 @@
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_image.h>
+#include <SDL2/SDL2_gfxPrimitives.h>
 #include <SDL_ttf.h>
 
 #include "graphics.h"
@@ -19,11 +20,13 @@
 #define DEFINE_FONT(_f, _p, _s)             [_f] = (font_request_t){.name = #_f, .path = _p, .size = _s}
 
 #define RGBA2SDLCOLOR(c)                    (SDL_Color){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
+#define SDLCOLOR2RGBA(c)                    (rgba_t){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
 
 typedef struct sdl_context_t
 {
     SDL_Window * window;
     SDL_Renderer * renderer;
+    SDL_Color background_color;
 
     struct 
     {
@@ -274,9 +277,44 @@ graphics_render( void )
 int
 graphics_set_background_color( rgba_t rgba )
 {
-    SDL_Color color = {0};
+    sdl.background_color = RGBA2SDLCOLOR(rgba);
+    SDL_SetRenderDrawColor(sdl.renderer, sdl.background_color.r, sdl.background_color.g,
+        sdl.background_color.b,  sdl.background_color.a);
+    return 0;
+}
 
-    color = RGBA2SDLCOLOR(color);
-    SDL_SetRenderDrawColor(sdl.renderer, color.r, color.g, color.b, color.a);
+static int
+graphics_update_background()
+{
+    graphics_set_background_color(SDLCOLOR2RGBA(sdl.background_color));
+    return 0;
+}
+
+int
+graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color )
+{
+    int i = 0;
+    Sint16 vx[3] = {0}, vy[3] = {0};
+
+    if(len < 0)
+        return -1;
+
+    for(i = 0; i < len; i++)
+    {
+        vx[0] = polygons[i].vertices[0].x * sdl.screen.width;
+        vy[0] = polygons[i].vertices[0].y * sdl.screen.height;
+
+        vx[1] = polygons[i].vertices[1].x * sdl.screen.width;
+        vy[1] = polygons[i].vertices[1].y * sdl.screen.height;
+
+        vx[2] = polygons[i].vertices[2].x * sdl.screen.width;
+        vy[2] = polygons[i].vertices[2].y * sdl.screen.height;
+        
+        filledPolygonRGBA(sdl.renderer, vx, vy, 3, color.r, 
+            color.g, color.b, color.a);
+    }
+
+    graphics_update_background();
+
     return 0;
 }

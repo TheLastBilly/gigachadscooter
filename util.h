@@ -44,7 +44,7 @@ typedef unsigned int uint;
 #endif
 
 static inline uint64_t
-time_ms(void)
+millis(void)
 {
 	struct timeval current_time = {0};
 	gettimeofday(&current_time, 0);

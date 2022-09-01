@@ -4,23 +4,42 @@
 #include <SDL_ttf.h>
 
 #include "graphics.h"
+#include "geometry.h"
 
 #include "log.h"
 #include "util.h"
 
-#define SDL_HARDCODED_DISPLAY               ":4.0"
+#define SDL_HARDCODED_DISPLAY                                   ":4.0"
 
-#define SDL_IMAGE_DEFAULT_FLAGS             (IMG_INIT_JPG | IMG_INIT_PNG)
-#define SDL_DEFAULT_FLAGS                   SDL_INIT_VIDEO
-#define SDL_DEFAULT_WINDOW_FLAGS            0
-#define SDL_DEFAULT_RENDERER_FLAGS          SDL_RENDERER_ACCELERATED
+#define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
+#define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
+#define SDL_DEFAULT_WINDOW_FLAGS                                0
+#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_ACCELERATED
 
-#define SDL_DEFAULT_FONTS_SIZE              18
+#define SDL_DEFAULT_FONTS_SIZE                                  18
 
-#define DEFINE_FONT(_f, _p, _s)             [_f] = (font_request_t){.name = #_f, .path = _p, .size = _s}
+#define DEFINE_FONT(_f, _p, _s)                                 [_f] = (font_request_t){.name = #_f, .path = _p, .size = _s}
 
-#define RGBA2SDLCOLOR(c)                    (SDL_Color){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
-#define SDLCOLOR2RGBA(c)                    (rgba_t){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
+#define RGBA2SDLCOLOR(c)                                        (SDL_Color){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
+#define SDLCOLOR2RGBA(c)                                        (rgba_t){.r = c.r, .g = c.g, .b = c.b, .a = c.a}
+
+#define TRANSFORM_POLYGONS(_p, _l, _func, ...)                  \
+{                                                               \
+    int i = 0, s = 0;                                           \
+    vertex2d_t v = {0}, r = {0};                                \
+                                                                \
+    for(i = 0; i < len; i++)                                    \
+    {                                                           \
+        for(s = 0; s < arrlen(polygons[0].vertices); s++)       \
+        {                                                       \
+            point2d(polygons[i].vertices[s].x,                  \
+                polygons[i].vertices[s].y, v);                  \
+            _func(v, __VA_ARGS__, r);                           \
+            polygons[i].vertices[s].x = r[0];                   \
+            polygons[i].vertices[s].y = r[1];                   \
+        }                                                       \
+    }                                                           \
+}
 
 typedef struct sdl_context_t
 {
@@ -317,4 +336,37 @@ graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color )
     graphics_update_background();
 
     return 0;
+}
+
+int
+graphics_rotate_polygons( polygon_t * polygons, int len, float t )
+{
+    TRANSFORM_POLYGONS(polygons, len, rotate_vertex, t);
+    return 0;
+}
+
+int
+graphics_translate_polygons( polygon_t * polygons, int len, float x, float y )
+{
+    TRANSFORM_POLYGONS(polygons, len, translate_vertex, x, y);
+    return 0;
+}
+
+int 
+graphics_scale_polygons( polygon_t * polygons, int len, float w, float h )
+{
+    TRANSFORM_POLYGONS(polygons, len, scale_vertex, w, h);
+    return 0;
+}
+
+uint32_t
+graphics_millis( void )
+{
+    return SDL_GetTicks();
+}
+
+void
+graphics_msleep( uint32_t sleep )
+{
+    SDL_Delay(sleep);
 }

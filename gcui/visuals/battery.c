@@ -6,19 +6,20 @@
 #include "log.h"
 #include "comm.h"
 #include "geometry.h"
+#include "commons.h"
 
-#define VISUAL_X                                .025
-#define VISUAL_Y                                .025
+#define VISUAL_TEXT_Y                           .925
+#define VISUAL_TEXT_X                           -1.0
 
 #define BATTERY_MAX_VAL                         100
 #define BATTERY_MIN_VAL                         0
 
-#define BATTERY_BARS                            40
+#define BATTERY_BARS                            20
 #define BATTERY_DELTA                           (((float)BATTERY_MAX_VAL)/((float)BATTERY_BARS))
 #define BATTERY_DELTA_ANGLE                     (180.0f/BATTERY_BARS)
-#define BATTERY_RADIUS                          .5
-#define BATTERY_BAR_WIDTH                       .025
-#define BATTERY_BAR_HEIGHT                      .015
+#define BATTERY_RADIUS                          .075
+#define BATTERY_BAR_WIDTH                       .005
+#define BATTERY_BAR_HEIGHT                      .0025
 
 #define BATTERY_MAX_LEN                         4
 
@@ -41,28 +42,16 @@ typedef struct ctx_t
 extern int errno;
 
 static ctx_t ctx = {0};
+static commons_bars_t bars = (commons_bars_t){
+    .h = BATTERY_BAR_HEIGHT,
+    .w = BATTERY_BAR_WIDTH,
 
-const polygon_t TEMPLATE_BAR[] = 
-{
-    (polygon_t) {
-        .vertices[0].x = 0,
-        .vertices[1].x = 0,
-        .vertices[2].x = BATTERY_BAR_WIDTH,
+    .max = BATTERY_MAX_VAL,
+    .radius = BATTERY_RADIUS,
 
-        .vertices[0].y = 0,
-        .vertices[1].y = BATTERY_BAR_HEIGHT,
-        .vertices[2].y = BATTERY_BAR_HEIGHT,
-    },
+    .ratio = true,
 
-    (polygon_t) {
-        .vertices[0].x = BATTERY_BAR_WIDTH,
-        .vertices[1].x = BATTERY_BAR_WIDTH,
-        .vertices[2].x = 0,
-
-        .vertices[0].y = BATTERY_BAR_HEIGHT,
-        .vertices[1].y = 0,
-        .vertices[2].y = 0,
-    },
+    .max_bars = BATTERY_BARS
 };
 
 static void
@@ -78,27 +67,6 @@ init( void )
 }
 
 static void
-draw_bars(long long battery, rgba_t color)
-{
-    int i = 0;
-    int bars = 0;
-    float t = 0.0f;
-    polygon_t bar[2] = {0};
-
-    bars = (int)roundf(battery/BATTERY_DELTA);
-
-    for(i = 0; i < bars; i++)
-    {
-        bar[0] = TEMPLATE_BAR[0];
-        bar[1] = TEMPLATE_BAR[1];
-
-        
-
-        t += BATTERY_DELTA_ANGLE;
-    }
-}   
-
-static void
 draw( void )
 {
     char buf[BATTERY_MAX_LEN + 2] = {0}; 
@@ -112,8 +80,11 @@ draw( void )
         BATTERY_MIN_VAL, BATTERY_MAX_VAL, 10);
 
     snprintf(buf, BATTERY_MAX_LEN, "%lli", level);
-    graphics_draw_text(GRAPHICS_FONT_MONOID_28, VISUAL_X, VISUAL_Y, 
+    graphics_draw_text(GRAPHICS_FONT_MONOID_28, VISUAL_TEXT_X, VISUAL_TEXT_Y, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
+    
+    bars.ratio = true;
+    draw_radius_bars(level, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
 }
 
 static void

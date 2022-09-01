@@ -2,14 +2,22 @@
 
 #include <errno.h>
 
+#include "commons.h"
 #include "log.h"
 #include "comm.h"
 
 #define VISUAL_X                                -1.0
 #define VISUAL_Y                                -1.0
 
-#define SPEED_MAX_VAL                           1000
+#define SPEED_MAX_VAL                           100
 #define SPEED_MIN_VAL                           0
+
+#define SPEED_BARS                              20
+#define SPEED_DELTA                             (((float)SPEED_MAX_VAL)/((float)SPEED_BARS))
+#define SPEED_DELTA_ANGLE                       (180.0f/SPEED_BARS)
+#define SPEED_RADIUS                            .25
+#define SPEED_BAR_WIDTH                         .005
+#define SPEED_BAR_HEIGHT                        .0025
 
 #define SPEED_MAX_LEN                           5
 
@@ -32,6 +40,17 @@ typedef struct ctx_t
 extern int errno;
 
 static ctx_t ctx = {0};
+
+static commons_bars_t bars = (commons_bars_t){
+    .h = SPEED_BAR_HEIGHT,
+    .w = SPEED_BAR_WIDTH,
+
+    .max = SPEED_MAX_VAL,
+    .radius = SPEED_RADIUS,
+    .ratio = true,
+
+    .max_bars = SPEED_BARS
+};
 
 static void
 intro( void )
@@ -61,6 +80,9 @@ draw( void )
     snprintf(buf, SPEED_MAX_LEN, "%lli", speed);
     graphics_draw_text(GRAPHICS_FONT_MONOID_64, VISUAL_X, VISUAL_Y, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
+    
+    bars.ratio = true;
+    draw_radius_bars(speed, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
 }
 
 static void

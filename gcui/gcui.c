@@ -6,12 +6,13 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <SDL.h>
 
 #include "visuals/visual.h"
 
 #define BACKGROUND_COLOR                            0x181A18FF
 
-#define MAIN_THREAD_WAIT                            500
+#define MAIN_THREAD_WAIT                            16
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -42,6 +43,7 @@ int
 main(int argc, char const *argv[])
 {
     int i = 0;
+    uint32_t ticks = 0;
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
 
@@ -54,11 +56,15 @@ main(int argc, char const *argv[])
     graphics_init();
     while(1)
     {
+        ticks = graphics_millis();
+
         graphics_clear();
         RUN_ON_VISUALS(MAIN_TAB, draw);
         graphics_render();
 
-        usleep(MAIN_THREAD_WAIT);
+        if ((graphics_millis() - ticks) < MAIN_THREAD_WAIT) {
+            graphics_msleep(MAIN_THREAD_WAIT);
+        }
     }
     graphics_terminate();
 

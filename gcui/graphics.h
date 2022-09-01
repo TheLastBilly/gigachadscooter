@@ -34,7 +34,7 @@ int graphics_init( void );
 int graphics_terminate( void );
 int graphics_set_window_size( int width, int height );
 int graphics_get_window_size( int *width, int *height );
-int graphics_draw_text(font_id_t font, int x, int y, rgba_t color, const char * text);
+int graphics_draw_text(font_id_t font, float x, float y, rgba_t color, const char * text);
 int graphics_clear( void );
 int graphics_render( void );
 int graphics_set_background_color(rgba_t color);

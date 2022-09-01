@@ -29,6 +29,7 @@
 #define swap(X, Y, T)                                           do { T s = X; X = Y; Y = s; } while(0)
 #define unused(x)                                               ((void)(x))
 #define clear(x)                                                memset((void *)(x), 0, sizeof(*(x)))
+#define clear_arr(x)                                            memset(x, 0, sizeof(x))
 #define arrlen(s)                                               (sizeof(s)/sizeof(*s))
 
 #define min(x, y)                                               ((x) <= (y) ? (x) : (y))
@@ -110,6 +111,22 @@ get_working_directory( void )
     getcwd(buff, sizeof(buff));
 
     return buff;
+}
+
+static long long
+strtolmm(const char *str, const char **end_ptr, long long min,
+    long long max, int base)
+{
+    long long ret = 0;
+
+    ret = strtol(str, NULL, 10);
+
+    if(ret > max)
+        ret = max;
+    if(ret < min)
+        ret = min;
+
+    return ret;
 }
 
 #endif

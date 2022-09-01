@@ -26,6 +26,7 @@ add_executable(gcui
     "../comm.c"
 
     "visuals/speedometer.c"
+    "visuals/battery.c"
 )
 target_link_libraries(gcui
     ${SDL2_LIBRARIES}

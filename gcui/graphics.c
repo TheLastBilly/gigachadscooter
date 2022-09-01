@@ -202,12 +202,13 @@ graphics_get_window_size( int *width, int *height )
 }
 
 int
-graphics_draw_text( font_id_t font, int x, int y, rgba_t rgba, const char * text )
+graphics_draw_text( font_id_t font, float xp, float yp, rgba_t rgba, const char * text )
 {
     int ret = 0;
     SDL_Rect rect = {0};
     SDL_Surface * surface = NULL;
     SDL_Color color = {0};
+    int x = 0, y = 0;
 
     color = RGBA2SDLCOLOR(rgba);
 
@@ -245,6 +246,9 @@ graphics_draw_text( font_id_t font, int x, int y, rgba_t rgba, const char * text
     rect.h = sdl.text.height;
     rect.w = sdl.text.width;
 
+    x = xp * sdl.screen.width;
+    y = yp * sdl.screen.height;
+    
     rect.x = x < 0 ? sdl.screen.width/2 - rect.w/2 : x;
     rect.y = y < 0 ? sdl.screen.height/2 - rect.h/2 : y;
     

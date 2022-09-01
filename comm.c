@@ -12,7 +12,7 @@
 #include "util.h"
 #include "comm.h"
 
-#define CONNECTION_TIMEOUT              5
+#define CONNECTION_TIMEOUT              0
 
 static char READ_BUFFER[COMM_MAX_READ] = {0};
 extern int errno;
@@ -143,7 +143,7 @@ comm_read( comm_t * comm, comm_buffer_t * buffer )
         if(comm->clients.fd[i] <= 0 || !FD_ISSET(comm->clients.fd[i], &comm->clients.set))
             continue;
         
-        clear(READ_BUFFER);
+        clear_arr(READ_BUFFER);
         ret = read(comm->clients.fd[i], READ_BUFFER, COMM_MAX_READ * sizeof(READ_BUFFER[0]));
 
         if(ret < 0)
@@ -156,7 +156,7 @@ comm_read( comm_t * comm, comm_buffer_t * buffer )
             memset(buffer->data, 0, sizeof(buffer->data));
             memcpy(buffer->data, READ_BUFFER, ret * sizeof(READ_BUFFER[0]));
 
-            if(ret < READ_BUFFER)
+            if(ret < arrlen(READ_BUFFER))
                 buffer->data[ret -1] = '\0';
         }
 

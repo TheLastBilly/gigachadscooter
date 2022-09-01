@@ -11,6 +11,8 @@
 
 #define BACKGROUND_COLOR                            0x181A18FF
 
+#define MAIN_THREAD_WAIT                            500
+
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
     visuals.IDs = _v;                               \
@@ -32,7 +34,8 @@ struct
 
 static const visual_id_t MAIN_TAB[] =
 {
-    VISUAL_SPEEDOMETER
+    VISUAL_SPEEDOMETER,
+    VISUAL_BATTERY
 };
 
 int 
@@ -52,7 +55,8 @@ main(int argc, char const *argv[])
         graphics_clear();
         RUN_ON_VISUALS(MAIN_TAB, draw);
         graphics_render();
-        usleep(100);
+
+        usleep(MAIN_THREAD_WAIT);
     }
     graphics_terminate();
 

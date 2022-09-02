@@ -12,6 +12,7 @@
 
 #define BACKGROUND_COLOR                            0x181A18FF
 
+#define POST_INTRO_WAIT                             1000
 #define MAIN_THREAD_WAIT                            32
 
 #define SET_CURRENT_VISUALS(_v)                     \
@@ -66,6 +67,9 @@ main(int argc, char const *argv[])
 
     signal(SIGINT, signal_handler);
 
+    RUN_ON_VISUALS(MAIN_TAB, intro);
+    graphics_msleep(POST_INTRO_WAIT);
+
     while(keep_running)
     {
         ticks = graphics_millis();
@@ -79,7 +83,7 @@ main(int argc, char const *argv[])
             graphics_msleep(MAIN_THREAD_WAIT);
         }
     }
-    
+
     graphics_terminate();
 
     RUN_ON_VISUALS(MAIN_TAB, terminate);

@@ -59,7 +59,7 @@ draw( void )
     if(temp < TEMPERATURE_MIN_VAL || temp > TEMPERATURE_MAX_VAL)
         return;
 
-    snprintf(TEMPERATURE_BUFFER, TEMPERATURE_TEXT_BUFFER_LEN, "%.1f\xB0""C", temp);
+    snprintf(TEMPERATURE_BUFFER, TEMPERATURE_TEXT_BUFFER_LEN, "%.1f °C", temp);
     graphics_draw_text(TEMPERATURE_FONT, VISUAL_TEXT_X, VISUAL_TEXT_Y, TEMPERATURE_FONT_COLOR, 
         TEMPERATURE_BUFFER);
 }

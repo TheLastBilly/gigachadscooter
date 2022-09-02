@@ -171,6 +171,12 @@ graphics_init( void )
         }
     }
 
+    SDL_SetHint( SDL_HINT_RENDER_SCALE_QUALITY, "1" );
+
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+    SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 2);
+    SDL_GL_SetAttribute(SDL_GL_ACCELERATED_VISUAL, 1); 
+
     return 0;
 }
 
@@ -241,6 +247,7 @@ graphics_load_sprite( const char * path, sprite_t * sprite )
         err("cannot create texture from surface: %s", SDL_GetError());
         return -1;
     }
+    SDL_SetTextureBlendMode(texture, SDL_BLENDMODE_BLEND);
 
     SDL_FreeSurface(surface);
     sprite->texture = (void *)texture;
@@ -329,7 +336,7 @@ graphics_draw_text( font_id_t font, float xp, float yp, rgba_t rgba, const char 
         return -1;
     }
 
-    surface = TTF_RenderText_Solid(sdl.fonts.data[font], text, color);
+    surface = TTF_RenderUTF8_Blended(sdl.fonts.data[font], text, color);
     if(!surface)
     {
         err("cannot create text surface: %s", TTF_GetError());
@@ -345,6 +352,7 @@ graphics_draw_text( font_id_t font, float xp, float yp, rgba_t rgba, const char 
         err("cannot create text texture: %s", SDL_GetError());
         return -1;
     }
+    SDL_SetTextureBlendMode(sdl.text.texture, SDL_BLENDMODE_BLEND);
 
     sdl.text.width = surface->w;
     sdl.text.height = surface->h;

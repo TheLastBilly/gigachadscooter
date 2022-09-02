@@ -14,7 +14,7 @@
 #define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
 #define SDL_DEFAULT_WINDOW_FLAGS                                0
-#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_ACCELERATED
+#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_SOFTWARE
 
 #define SDL_DEFAULT_FONTS_SIZE                                  18
 
@@ -85,7 +85,7 @@ const font_request_t FONT_REQUESTS[] = {
     DEFINE_FONT(GRAPHICS_FONT_MONOID_26, "Monoid/Monoid-Regular.ttf", 26),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_28, "Monoid/Monoid-Regular.ttf", 28),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_64, "Monoid/Monoid-Regular.ttf", 64),
-    DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128)
 };
 
 static const char *
@@ -114,7 +114,7 @@ graphics_init( void )
     int i = 0;
     SDL_DisplayMode dm = {0};
 
-    clear(&sdl);
+    memset(&sdl, 0, sizeof(sdl));
     gmema_init();
 
 #ifdef SDL_HARDCODED_DISPLAY

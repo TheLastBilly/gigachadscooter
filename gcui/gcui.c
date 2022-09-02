@@ -27,6 +27,13 @@
         visual_get_visual(visuals.IDs[_i])->_f();   \
 }
 
+static volatile bool keep_running = true;
+static void
+signal_handler(int sig)
+{
+    keep_running = false;
+}
+
 struct
 {
     const visual_id_t *IDs;
@@ -45,18 +52,19 @@ int
 main(int argc, char const *argv[])
 {
     int i = 0;
-    uint32_t ticks = 0;
+    uint32_t ticks = 0, delta = 0;
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
 
     gmema_init();
 
     SET_CURRENT_VISUALS(MAIN_TAB);
-
     RUN_ON_VISUALS(MAIN_TAB, init);
 
+    signal(SIGINT, signal_handler);
+
     graphics_init();
-    while(1)
+    while(keep_running)
     {
         ticks = graphics_millis();
 
@@ -64,7 +72,8 @@ main(int argc, char const *argv[])
         RUN_ON_VISUALS(MAIN_TAB, draw);
         graphics_render();
 
-        if ((graphics_millis() - ticks) < MAIN_THREAD_WAIT) {
+        delta = graphics_millis() - ticks;
+        if (delta < MAIN_THREAD_WAIT) {
             graphics_msleep(MAIN_THREAD_WAIT);
         }
     }

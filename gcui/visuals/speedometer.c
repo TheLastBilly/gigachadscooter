@@ -7,7 +7,7 @@
 #include "comm.h"
 
 #define VISUAL_X                                -1.0
-#define VISUAL_Y                                .675
+#define VISUAL_Y                                .685
 
 #define SPEED_MAX_VAL                           80
 #define SPEED_MIN_VAL                           0

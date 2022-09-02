@@ -35,12 +35,6 @@ static char
 TEMPERATURE_BUFFER[TEMPERATURE_TEXT_BUFFER_LEN] = {0};
 
 static void
-intro( void )
-{
-    
-}
-
-static void
 init( void )
 {
     comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/temperature.sock");
@@ -80,8 +74,6 @@ terminate( void )
 }
 
 static const visual_t visual = (visual_t){
-    .intro = intro,
-
     .init = init,
 
     .draw = draw,

@@ -18,7 +18,7 @@
 #define BATTERY_DELTA                           (((float)BATTERY_MAX_VAL)/((float)BATTERY_BARS))
 #define BATTERY_DELTA_ANGLE                     (180.0f/BATTERY_BARS)
 #define BATTERY_RADIUS                          .075
-#define BATTERY_BAR_WIDTH                       .020
+#define BATTERY_BAR_WIDTH                       .02
 #define BATTERY_BAR_HEIGHT                      .005
 
 #define BATTERY_MAX_LEN                         5
@@ -53,12 +53,6 @@ static commons_bars_t bars = (commons_bars_t){
 
     .max_bars = BATTERY_BARS
 };
-
-static void
-intro( void )
-{
-    
-}
 
 static void
 init( void )
@@ -102,8 +96,6 @@ terminate( void )
 }
 
 static const visual_t visual = (visual_t){
-    .intro = intro,
-
     .init = init,
 
     .draw = draw,

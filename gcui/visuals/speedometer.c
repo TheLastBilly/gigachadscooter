@@ -87,23 +87,6 @@ draw_text(const char * text)
 }
 
 static void
-intro( void )
-{
-    int i = 0;
-
-    for(i = SPEED_MIN_VAL; i < SPEED_MAX_VAL; i++)
-    {
-        draw_radius_bars(i, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
-        graphics_render();
-
-        if(i < SPEED_MAX_VAL/5)
-            graphics_msleep(100);
-        else
-            graphics_msleep(5);
-    }
-}
-
-static void
 init( void )
 {
     comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/speedometer.sock");
@@ -144,8 +127,6 @@ terminate( void )
 }
 
 static const visual_t visual = (visual_t){
-    .intro = intro,
-
     .init = init,
 
     .draw = draw,

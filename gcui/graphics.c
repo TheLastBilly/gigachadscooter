@@ -423,7 +423,7 @@ graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color )
         vx[2] = polygons[i].vertices[2].x * sdl.screen.width;
         vy[2] = polygons[i].vertices[2].y * sdl.screen.height;
         
-        filledPolygonRGBA(sdl.renderer, vx, vy, 3, color.r, 
+        aapolygonRGBA(sdl.renderer, vx, vy, 3, color.r, 
             color.g, color.b, color.a);
     }
 

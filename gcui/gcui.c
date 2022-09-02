@@ -10,7 +10,7 @@
 
 #include "visuals/visual.h"
 
-#define BACKGROUND_COLOR                            0x181A18FF
+#define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x0c120aff)
 
 #define POST_INTRO_WAIT                             1000
 #define MAIN_THREAD_WAIT                            32
@@ -62,13 +62,13 @@ main(int argc, char const *argv[])
 
     graphics_init();
 
+    graphics_set_background_color(BACKGROUND_COLOR);
+    graphics_clear();
+
     SET_CURRENT_VISUALS(MAIN_TAB);
     RUN_ON_VISUALS(MAIN_TAB, init);
 
     signal(SIGINT, signal_handler);
-
-    RUN_ON_VISUALS(MAIN_TAB, intro);
-    graphics_msleep(POST_INTRO_WAIT);
 
     while(keep_running)
     {

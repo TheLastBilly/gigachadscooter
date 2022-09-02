@@ -22,21 +22,6 @@ static char
 TIME_BUFFER[TIME_TEXT_BUFFER_LEN] = {0};
 
 static void
-intro( void )
-{
-    rgba_t color = TIME_FONT_COLOR;
-
-    graphics_draw_text(TIME_FONT, VISUAL_TEXT_X, VISUAL_TEXT_Y, GRAPHICS_HEX2RGBA(0x000000ff), 
-        TIME_INTRO_TEXT);
-    graphics_draw_text(TIME_FONT, VISUAL_TEXT_X, VISUAL_TEXT_Y, color, 
-        TIME_INTRO_TEXT);
-    graphics_render();
-
-    color.a += 1;
-    graphics_msleep(TIME_INTRO_ALPHA_DELAY);
-}
-
-static void
 init( void )
 {
 }
@@ -76,8 +61,6 @@ terminate( void )
 }
 
 static const visual_t visual = (visual_t){
-    .intro = intro,
-
     .init = init,
 
     .draw = draw,

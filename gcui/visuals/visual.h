@@ -25,8 +25,6 @@ typedef void (*visual_task_cb_t)( void );
 
 typedef struct visual_t
 {
-    visual_task_cb_t intro;
-
     visual_task_cb_t init;
 
     visual_task_cb_t draw;

@@ -38,11 +38,6 @@ typedef struct ctx_t
 static ctx_t ctx = {0};
 
 static void
-intro( void )
-{
-}
-
-static void
 init( void )
 {
     int ret = 0;
@@ -108,8 +103,6 @@ terminate( void )
 }
 
 static const visual_t visual = (visual_t){
-    .intro = intro,
-
     .init = init,
 
     .draw = draw,

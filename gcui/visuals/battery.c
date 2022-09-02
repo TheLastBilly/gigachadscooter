@@ -18,10 +18,10 @@
 #define BATTERY_DELTA                           (((float)BATTERY_MAX_VAL)/((float)BATTERY_BARS))
 #define BATTERY_DELTA_ANGLE                     (180.0f/BATTERY_BARS)
 #define BATTERY_RADIUS                          .075
-#define BATTERY_BAR_WIDTH                       .005
-#define BATTERY_BAR_HEIGHT                      .0025
+#define BATTERY_BAR_WIDTH                       .020
+#define BATTERY_BAR_HEIGHT                      .005
 
-#define BATTERY_MAX_LEN                         4
+#define BATTERY_MAX_LEN                         5
 
 #if COMM_MAX_READ > BATTERY_MAX_LEN
 #define BATTERY_END_IDX                         BATTERY_MAX_LEN
@@ -79,11 +79,10 @@ draw( void )
     level = strtolmm(ctx.comm.buffer.data, NULL,
         BATTERY_MIN_VAL, BATTERY_MAX_VAL, 10);
 
-    snprintf(buf, BATTERY_MAX_LEN, "%lli", level);
+    snprintf(buf, BATTERY_MAX_LEN, "%lli%%", level);
     graphics_draw_text(GRAPHICS_FONT_MONOID_28, VISUAL_TEXT_X, VISUAL_TEXT_Y, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
     
-    bars.ratio = true;
     draw_radius_bars(level, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
 }
 

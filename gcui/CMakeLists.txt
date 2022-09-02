@@ -31,6 +31,7 @@ add_executable(gcui
 
     "visuals/speedometer.c"
     "visuals/battery.c"
+    "visuals/time.c"
 )
 target_link_libraries(gcui
     -lm

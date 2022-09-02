@@ -7,6 +7,8 @@
 #include "geometry.h"
 #include "graphics.h"
 
+typedef rgba_t (*comms_bars_color_cb_t)(float t, float value, int bar);
+
 typedef struct commons_bars_t
 {
     uint32_t max;
@@ -19,10 +21,12 @@ typedef struct commons_bars_t
     int max_bars;
 
     bool ratio;
+
+    comms_bars_color_cb_t color_cb;
 } commons_bars_t;
 
 static void
-draw_radius_bars(uint32_t level, commons_bars_t * cbars, rgba_t color)
+draw_radius_bars(uint32_t value, commons_bars_t * cbars, rgba_t color)
 {
     static const polygon_t TEMPLATE_BAR[] = 
     {
@@ -52,7 +56,7 @@ draw_radius_bars(uint32_t level, commons_bars_t * cbars, rgba_t color)
     polygon_t bar[2] = {0}, base_bar[2] = {0};
     
     d = cbars->max/cbars->max_bars;
-    bars = (int)roundf(level/d);
+    bars = (int)roundf(value/d);
     dt = 180.0/cbars->max_bars;
 
     if(cbars->ratio)
@@ -73,6 +77,9 @@ draw_radius_bars(uint32_t level, commons_bars_t * cbars, rgba_t color)
 
         memcpy(bar, base_bar, sizeof(bar));
 
+        if(cbars->color_cb)
+            color = cbars->color_cb(t, value, i);
+        
         graphics_translate_polygons(bar, 2, -cbars->radius, 0);
         graphics_rotate_polygons(bar, 2, t);
         graphics_scale_polygons(bar, 2, 1.0, ratio);

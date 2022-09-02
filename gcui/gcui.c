@@ -12,7 +12,7 @@
 
 #define BACKGROUND_COLOR                            0x181A18FF
 
-#define MAIN_THREAD_WAIT                            16
+#define MAIN_THREAD_WAIT                            32
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -36,7 +36,8 @@ struct
 static const visual_id_t MAIN_TAB[] =
 {
     VISUAL_SPEEDOMETER,
-    VISUAL_BATTERY
+    VISUAL_BATTERY,
+    VISUAL_TIME
 };
 
 int 

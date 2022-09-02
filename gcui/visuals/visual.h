@@ -14,6 +14,7 @@ typedef enum visual_id_t
 {
     VISUAL_SPEEDOMETER,
     VISUAL_BATTERY,
+    VISUAL_TIME,
 
     VISUALS_END
 } visual_id_t;
@@ -40,6 +41,7 @@ visual_get_visual( visual_id_t id )
 {
     VISUAL_IMPORT_STATIC(_visual_speedometer);
     VISUAL_IMPORT_STATIC(_visual_battery);
+    VISUAL_IMPORT_STATIC(_visual_time);
 
     switch (id)
     {
@@ -47,6 +49,8 @@ visual_get_visual( visual_id_t id )
         return _visual_speedometer;
     case VISUAL_BATTERY:
         return _visual_battery;
+    case VISUAL_TIME:
+        return _visual_time;
     
     default:
         return NULL;

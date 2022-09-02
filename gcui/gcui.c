@@ -37,7 +37,8 @@ static const visual_id_t MAIN_TAB[] =
 {
     VISUAL_SPEEDOMETER,
     VISUAL_BATTERY,
-    VISUAL_TIME
+    VISUAL_TIME,
+    VISUAL_TEMPERATURE
 };
 
 int 

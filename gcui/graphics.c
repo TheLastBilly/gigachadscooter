@@ -79,6 +79,10 @@ typedef struct font_request_t
 static sdl_context_t sdl;
 
 const font_request_t FONT_REQUESTS[] = {
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_12, "Monoid/Monoid-Regular.ttf", 12),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_18, "Monoid/Monoid-Regular.ttf", 18),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_22, "Monoid/Monoid-Regular.ttf", 22),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_26, "Monoid/Monoid-Regular.ttf", 26),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_28, "Monoid/Monoid-Regular.ttf", 28),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_64, "Monoid/Monoid-Regular.ttf", 64),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128),

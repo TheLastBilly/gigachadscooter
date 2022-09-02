@@ -2,6 +2,7 @@
 #define __GRAPHICS_H__
 
 #include <stdint.h>
+#include <stdbool.h>
 
 #define APP_NAME                            "gcui"
 
@@ -36,7 +37,7 @@ typedef struct rgba_t
 
 typedef struct sprite_t
 {
-    void * data;
+    void * texture;
 } sprite_t;
 
 typedef struct polygon_t
@@ -49,6 +50,11 @@ typedef struct polygon_t
 
 int graphics_init( void );
 int graphics_terminate( void );
+
+int graphics_load_sprite( const char * path, sprite_t * sprite );
+int graphics_free_sprite( sprite_t * sprite );
+int graphics_draw_sprite( sprite_t * sprite, float w, float h, float x, float y, float t, bool flipx, bool flipy );
+
 int graphics_set_window_size( int width, int height );
 int graphics_get_window_size( int *width, int *height );
 int graphics_draw_text(font_id_t font, float x, float y, rgba_t color, const char * text);

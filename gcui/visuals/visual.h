@@ -16,6 +16,7 @@ typedef enum visual_id_t
     VISUAL_BATTERY,
     VISUAL_TIME,
     VISUAL_TEMPERATURE,
+    VISUAL_BLINKERS,
 
     VISUALS_END
 } visual_id_t;
@@ -44,6 +45,7 @@ visual_get_visual( visual_id_t id )
     VISUAL_IMPORT_STATIC(_visual_battery);
     VISUAL_IMPORT_STATIC(_visual_time);
     VISUAL_IMPORT_STATIC(_visual_temperature);
+    VISUAL_IMPORT_STATIC(_visual_blinkers);
 
     switch (id)
     {
@@ -55,6 +57,8 @@ visual_get_visual( visual_id_t id )
         return _visual_time;
     case VISUAL_TEMPERATURE:
         return _visual_temperature;
+    case VISUAL_BLINKERS:
+        return _visual_blinkers;
     
     default:
         return NULL;

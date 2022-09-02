@@ -76,6 +76,7 @@ on_wake( void )
 static void
 terminate( void )
 {
+    comm_destroy(&ctx.comm.comm);
 }
 
 static const visual_t visual = (visual_t){

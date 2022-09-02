@@ -45,7 +45,8 @@ static const visual_id_t MAIN_TAB[] =
     VISUAL_SPEEDOMETER,
     VISUAL_BATTERY,
     VISUAL_TIME,
-    VISUAL_TEMPERATURE
+    VISUAL_TEMPERATURE,
+    VISUAL_BLINKERS
 };
 
 int 
@@ -58,12 +59,13 @@ main(int argc, char const *argv[])
 
     gmema_init();
 
+    graphics_init();
+
     SET_CURRENT_VISUALS(MAIN_TAB);
     RUN_ON_VISUALS(MAIN_TAB, init);
 
     signal(SIGINT, signal_handler);
 
-    graphics_init();
     while(keep_running)
     {
         ticks = graphics_millis();
@@ -77,6 +79,7 @@ main(int argc, char const *argv[])
             graphics_msleep(MAIN_THREAD_WAIT);
         }
     }
+    
     graphics_terminate();
 
     RUN_ON_VISUALS(MAIN_TAB, terminate);

@@ -33,6 +33,7 @@ add_executable(gcui
     "visuals/battery.c"
     "visuals/time.c"
     "visuals/temperature.c"
+    "visuals/blinkers.c"
 )
 target_link_libraries(gcui
     -lm

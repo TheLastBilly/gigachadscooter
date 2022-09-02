@@ -5,6 +5,7 @@
 
 #include "graphics.h"
 #include "geometry.h"
+#include "log.h"
 
 #include "log.h"
 #include "util.h"
@@ -96,7 +97,10 @@ get_assets_global_path( const char * path )
     static char * buf = NULL;
 
     if(buf)
+    {
         gfree(buf);
+        buf = NULL;
+    }
 
     workdir = get_working_directory();
     size = strlen(path) + arrlen(GRAPHICS_FONTS_PATH) + strlen(workdir) + 2;
@@ -200,6 +204,84 @@ graphics_terminate( void )
         SDL_DestroyWindow(sdl.window);
 
     SDL_Quit();
+}
+
+int
+graphics_load_sprite( const char * path, sprite_t * sprite )
+{
+    static char * buf = NULL;
+
+    size_t size = 0;
+    SDL_Surface * surface = NULL;
+    SDL_Texture * texture = NULL;
+    const char *workdir = NULL;
+
+    if(buf)
+    {
+        gfree(buf);
+        buf = NULL;
+    }
+
+    workdir = get_working_directory();
+    size = strlen(GRAPHICS_ASSETS_PATH) + strlen(path) + 
+        strlen(workdir) + 3;
+    buf = gcalloc(1, size);
+    snprintf(buf, size, "%s/%s/%s", workdir, GRAPHICS_ASSETS_PATH, path);
+
+    surface = IMG_Load(buf);
+    if(surface == NULL)
+    {
+        err("cannot load sprite from path \"%s\": %s", buf, SDL_GetError());
+        return -1;
+    }
+
+    texture = SDL_CreateTextureFromSurface(sdl.renderer, surface);
+    if(texture == NULL)
+    {
+        err("cannot create texture from surface: %s", SDL_GetError());
+        return -1;
+    }
+
+    SDL_FreeSurface(surface);
+    sprite->texture = (void *)texture;
+
+    return 0;
+}
+
+int
+graphics_free_sprite( sprite_t * sprite )
+{
+    if(sprite->texture)
+        SDL_DestroyTexture((SDL_Texture *)sprite->texture);
+
+    return 0;
+}
+
+int
+graphics_draw_sprite( sprite_t * sprite, float w, float h, float x, float y, 
+    float t, bool flipx, bool flipy )
+{
+    SDL_Rect rect = {0};
+    SDL_RendererFlip flip = 0;
+
+    if(flipx)
+        flip |= SDL_FLIP_HORIZONTAL;
+    if(flipy)
+        flip |= SDL_FLIP_VERTICAL;
+
+    rect = (SDL_Rect){ 
+        .w = (int)(w * (float)sdl.screen.width),
+        .h = (int)(h * (float)sdl.screen.height),
+
+        .x = (int)(x * (float)sdl.screen.width),
+        .y = (int)(y * (float)sdl.screen.height)
+    };
+
+    if(sprite->texture)
+        return SDL_RenderCopyEx(sdl.renderer, (SDL_Texture *)sprite->texture, NULL,
+            &rect, t, NULL, flip);
+    
+    return 0;
 }
 
 int

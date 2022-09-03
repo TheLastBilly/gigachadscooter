@@ -264,6 +264,13 @@ graphics_free_sprite( sprite_t * sprite )
     return 0;
 }
 
+
+int 
+graphics_set_sprite_alpha( sprite_t * sprite, uint8_t alpha )
+{
+    return SDL_SetTextureAlphaMod((SDL_Texture*)sprite->texture, alpha);
+}
+
 int
 graphics_draw_sprite( sprite_t * sprite, float w, float h, float x, float y, 
     float t, bool flipx, bool flipy )
@@ -423,6 +430,8 @@ graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color )
         vx[2] = polygons[i].vertices[2].x * sdl.screen.width;
         vy[2] = polygons[i].vertices[2].y * sdl.screen.height;
         
+        filledPolygonRGBA(sdl.renderer, vx, vy, 3, color.r, 
+            color.g, color.b, color.a);
         aapolygonRGBA(sdl.renderer, vx, vy, 3, color.r, 
             color.g, color.b, color.a);
     }

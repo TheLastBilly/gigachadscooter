@@ -53,6 +53,7 @@ int graphics_terminate( void );
 
 int graphics_load_sprite( const char * path, sprite_t * sprite );
 int graphics_free_sprite( sprite_t * sprite );
+int graphics_set_sprite_alpha( sprite_t * sprite, uint8_t alpha );
 int graphics_draw_sprite( sprite_t * sprite, float w, float h, float x, float y, float t, bool flipx, bool flipy );
 
 int graphics_set_window_size( int width, int height );

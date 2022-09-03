@@ -24,6 +24,7 @@ include_directories("${CMAKE_SOURCE_DIR}/..")
 add_executable(gcui
     "gcui.c"
     "graphics.c"
+    "intro.c"
 
     "../log.c"
     "../mema.c"

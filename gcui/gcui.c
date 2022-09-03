@@ -10,7 +10,8 @@
 
 #include "visuals/visual.h"
 
-#define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x0c120aff)
+// #define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x0c120aff)
+#define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 #define POST_INTRO_WAIT                             1000
 #define MAIN_THREAD_WAIT                            32
@@ -50,6 +51,8 @@ static const visual_id_t MAIN_TAB[] =
     VISUAL_BLINKERS
 };
 
+extern void play_intro( void );
+
 int 
 main(int argc, char const *argv[])
 {
@@ -63,6 +66,9 @@ main(int argc, char const *argv[])
     graphics_init();
 
     graphics_set_background_color(BACKGROUND_COLOR);
+
+    play_intro();
+
     graphics_clear();
 
     SET_CURRENT_VISUALS(MAIN_TAB);

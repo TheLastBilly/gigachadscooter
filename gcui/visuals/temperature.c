@@ -40,22 +40,31 @@ init( void )
     comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/temperature.sock");
 }
 
-static void
-draw( void )
+static bool
+draw( bool redraw )
 {
     float temp = 0.0f;
 
+    static float last_temp = 0.0f;
+
     comm_read(&ctx.comm.comm, &ctx.comm.buffer);
     if(ctx.comm.buffer.len > TEMPERATURE_TEXT_BUFFER_LEN)
-        return;
+        return false;
     
     temp = strtof(ctx.comm.buffer.data, NULL);
     if(temp < TEMPERATURE_MIN_VAL || temp > TEMPERATURE_MAX_VAL)
-        return;
+        return false;
+
+    if(!redraw && last_temp == temp)
+        return false;
+
+    last_temp = temp;
 
     snprintf(TEMPERATURE_BUFFER, TEMPERATURE_TEXT_BUFFER_LEN, "%.1f °C", temp);
     graphics_draw_text(TEMPERATURE_FONT, VISUAL_TEXT_X, VISUAL_TEXT_Y, TEMPERATURE_FONT_COLOR, 
         TEMPERATURE_BUFFER);
+    
+    return true;
 }
 
 static void

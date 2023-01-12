@@ -26,11 +26,13 @@ init( void )
 {
 }
 
-static void
-draw( void )
+static bool
+draw( bool redraw )
 {
     time_t tt;
     struct tm * ti;
+
+    static char last_time[arrlen(TIME_BUFFER)] = {0};
 
     time(&tt);
     ti = localtime(&tt);
@@ -42,8 +44,15 @@ draw( void )
         ti->tm_min
     );
 
+    // Maybe not the most efficient thing in the world... but it works*
+    if(!redraw && strcmp(last_time, TIME_BUFFER) == 0)
+        return false;
+
+    arrcopy(TIME_BUFFER, last_time);
     graphics_draw_text(TIME_FONT, VISUAL_TEXT_X, VISUAL_TEXT_Y, TIME_FONT_COLOR, 
         TIME_BUFFER);
+    
+    return true;
 }
 
 static void

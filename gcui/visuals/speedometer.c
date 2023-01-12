@@ -92,23 +92,32 @@ init( void )
     comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/speedometer.sock");
 }
 
-static void
-draw( void )
+static bool
+draw( bool redraw )
 {
     char buf[SPEED_MAX_LEN + 2] = {0}; 
     long long speed = 0;
 
+    static long long last_speed = 0;
+
     comm_read(&ctx.comm.comm, &ctx.comm.buffer);
     if(ctx.comm.buffer.len > SPEED_MAX_LEN)
-        return;
+        return false;
     
     speed = strtolmm(ctx.comm.buffer.data, NULL,
         SPEED_MIN_VAL, SPEED_MAX_VAL, 10);
 
     snprintf(buf, SPEED_MAX_LEN, "%lli", speed);
+
+    if(!redraw && last_speed == speed)
+        return false;
+    
+    last_speed = speed;
     
     draw_radius_bars(speed, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
     draw_text(buf);
+
+    return true;
 }
 
 static void

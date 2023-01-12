@@ -31,6 +31,7 @@
 #define clear(x)                                                memset((void *)(x), 0, sizeof(*(x)))
 #define clear_arr(x)                                            memset(x, 0, sizeof(x))
 #define arrlen(s)                                               (sizeof(s)/sizeof(*s))
+#define arrcopy(s, d)                                           (memcpy(d, s, sizeof(s)))
 
 #define min(x, y)                                               ((x) <= (y) ? (x) : (y))
 #define max(x, y)                                               ((x) >= (y) ? (x) : (y))

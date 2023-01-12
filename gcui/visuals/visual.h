@@ -22,12 +22,13 @@ typedef enum visual_id_t
 } visual_id_t;
 
 typedef void (*visual_task_cb_t)( void );
+typedef bool (*visual_draw_cb_t)( bool );
 
 typedef struct visual_t
 {
     visual_task_cb_t init;
 
-    visual_task_cb_t draw;
+    visual_draw_cb_t draw;
 
     visual_task_cb_t on_sleep;
     visual_task_cb_t on_wake;

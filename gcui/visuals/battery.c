@@ -60,24 +60,33 @@ init( void )
     comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/battery.sock");
 }
 
-static void
-draw( void )
+static bool
+draw( bool redraw )
 {
     char buf[BATTERY_MAX_LEN + 2] = {0}; 
     long long level = 0;
 
+    static long long past_level = 0;
+
     comm_read(&ctx.comm.comm, &ctx.comm.buffer);
     if(ctx.comm.buffer.len > BATTERY_MAX_LEN)
-        return;
+        return false;
     
     level = strtolmm(ctx.comm.buffer.data, NULL,
         BATTERY_MIN_VAL, BATTERY_MAX_VAL, 10);
 
+    if(!redraw && past_level == level)
+        return false;
+
+    past_level = level;
+
     snprintf(buf, BATTERY_MAX_LEN, "%lli%%", level);
+    
     graphics_draw_text(GRAPHICS_FONT_MONOID_28, VISUAL_TEXT_X, VISUAL_TEXT_Y, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
-    
     draw_radius_bars(level, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
+
+    return true;
 }
 
 static void

@@ -14,7 +14,7 @@
 #define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 #define POST_INTRO_WAIT                             1000
-#define MAIN_THREAD_WAIT                            32
+#define MAIN_THREAD_WAIT                            (1000/60)
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -57,6 +57,7 @@ int
 main(int argc, char const *argv[])
 {
     int i = 0, ret = 0;
+    bool should_clear = true, clear_requested = false;
     uint32_t ticks = 0, delta = 0;
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
@@ -85,13 +86,31 @@ main(int argc, char const *argv[])
     {
         ticks = graphics_millis();
 
-        graphics_clear();
-        RUN_ON_VISUALS(MAIN_TAB, draw);
-        graphics_render();
+        if(should_clear)
+        {
+            dbg("clear screen requested");
+            graphics_clear();
+        }
+        
+        clear_requested = false;
+        for(i = 0; i < visuals.len; i++)
+        {
+            ret = visual_get_visual(visuals.IDs[i])->draw(should_clear);
+            if(ret)
+                clear_requested = true;
+        }
+        
+        if(should_clear)
+        {
+            dbg("new render requested");
+            graphics_render();
+        }
+        
+        should_clear = clear_requested && !should_clear;
 
         delta = graphics_millis() - ticks;
         if (delta < MAIN_THREAD_WAIT) {
-            graphics_msleep(MAIN_THREAD_WAIT);
+            graphics_msleep(MAIN_THREAD_WAIT - delta);
         }
     }
 

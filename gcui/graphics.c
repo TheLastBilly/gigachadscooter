@@ -10,7 +10,7 @@
 #include "log.h"
 #include "util.h"
 
-// #define SDL_HARDCODED_DISPLAY                                   ":1.0"
+#define SDL_HARDCODED_DISPLAY                                   ":1.0"
 
 #define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
@@ -399,7 +399,10 @@ graphics_clear( void )
 int
 graphics_render( void )
 {
+    SDL_Event event = {};
+    
     SDL_RenderPresent(sdl.renderer);
+    SDL_PollEvent(&event);
     return 0;
 }
 

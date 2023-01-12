@@ -48,11 +48,14 @@ init( void )
         abort();
 }
 
-static void
-draw( void )
+static bool
+draw( bool redraw )
 {
     int i = 0;
-    bool r = false, l = false;
+    bool r = false, l = false, should_clear = false;
+
+    static bool was_on[2] = {0};
+
     comm_read(&ctx.comm.comm, &ctx.comm.buffer);
 
     if(strcmp(ctx.comm.buffer.data, "R") == 0)
@@ -79,11 +82,19 @@ draw( void )
             ctx.blinker[i].blink_on = !ctx.blinker[i].blink_on;
         }
 
-        if(ctx.blinker[i].blink_on)
+        if(ctx.blinker[i].blink_on && (redraw || !was_on[i]))
+        {
             graphics_draw_sprite(&ctx.sprite, BLINKERS_W, BLINKERS_H, 
                 i == 1 ? BLINKERS_X : 1.0f - BLINKERS_X - BLINKERS_W, BLINKERS_Y, 
                 0.0, i == 0, false);
+            
+            should_clear = true;
+        }
+
+        was_on[i] = ctx.blinker[i].blink_on;
     }
+
+    return should_clear;
 }
 
 static void

@@ -21,20 +21,9 @@ include_directories(${SDL2GFX_INCLUDE_DIRS})
 include_directories("${CMAKE_SOURCE_DIR}")
 include_directories("${CMAKE_SOURCE_DIR}/..")
 
+file(GLOB sources "*.c" "visuals/*.c")
 add_executable(gcui
-    "gcui.c"
-    "graphics.c"
-    "intro.c"
-
-    "../log.c"
-    "../mema.c"
-    "../comm.c"
-
-    "visuals/speedometer.c"
-    "visuals/battery.c"
-    "visuals/time.c"
-    "visuals/temperature.c"
-    "visuals/blinkers.c"
+    ${sources}
 )
 target_link_libraries(gcui
     -lm

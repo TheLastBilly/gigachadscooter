@@ -89,28 +89,6 @@ const font_request_t FONT_REQUESTS[] = {
     DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128)
 };
 
-static const char *
-get_assets_global_path( const char * path )
-{
-    size_t size = 0;
-    const char * workdir = NULL;
-    static char * buf = NULL;
-
-    if(buf)
-    {
-        gfree(buf);
-        buf = NULL;
-    }
-
-    workdir = get_working_directory();
-    size = strlen(path) + arrlen(GRAPHICS_FONTS_PATH) + strlen(workdir) + 2;
-    buf = gcalloc(size, sizeof(char));
-    
-    snprintf(buf, size, "%s/%s%s", workdir, GRAPHICS_FONTS_PATH, path);
-
-    return buf;
-}
-
 int
 graphics_init( void )
 {
@@ -168,7 +146,7 @@ graphics_init( void )
 
         for(i = 0; i < sdl.fonts.len; i++)
         {
-            path = get_assets_global_path(FONT_REQUESTS[i].path);
+            path = graphics_get_assets_global_path(GRAPHICS_FONTS_PATH, FONT_REQUESTS[i].path);
 
             sdl.fonts.data[i] = TTF_OpenFont(path, FONT_REQUESTS[i].size);
             if(sdl.fonts.data[i] == NULL)

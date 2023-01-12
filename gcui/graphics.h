@@ -3,11 +3,14 @@
 
 #include <stdint.h>
 #include <stdbool.h>
+#include <string.h>
+#include "util.h"
 
 #define APP_NAME                            "gcui"
 
 #define GRAPHICS_ASSETS_PATH                "assets/"
 #define GRAPHICS_FONTS_PATH                 GRAPHICS_ASSETS_PATH "fonts/"
+#define GRAPHICS_SHADERS_PATH               GRAPHICS_ASSETS_PATH "shaders/"
 
 #define GRAPHICS_HEX2RGBA(hex)              \
 (rgba_t){                                   \
@@ -48,6 +51,29 @@ typedef struct polygon_t
     } vertices[3];
 } polygon_t;
 
+
+static inline const char *
+graphics_get_assets_global_path( const char * relative, const char * path )
+{
+    size_t size = 0;
+    const char * workdir = NULL;
+    static char * buf = NULL;
+
+    if(buf)
+    {
+        gfree(buf);
+        buf = NULL;
+    }
+
+    workdir = get_working_directory();
+    size = strlen(path) + arrlen(relative) + strlen(workdir) + 2;
+    buf = gcalloc(size, sizeof(char));
+    
+    snprintf(buf, size, "%s/%s%s", workdir, relative, path);
+
+    return buf;
+}
+
 int graphics_init( void );
 int graphics_terminate( void );
 
@@ -63,6 +89,7 @@ int graphics_clear( void );
 int graphics_listen_for_events( void );
 int graphics_render( void );
 int graphics_set_background_color(rgba_t color);
+int graphics_update_background();
 int graphics_load_sprite( const char * path, sprite_t * sprite);
 int graphics_render_sprite( float x, float y, float w, float h, sprite_t * sprite );
 int graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color );

@@ -84,6 +84,8 @@ main(int argc, char const *argv[])
 
     while(keep_running)
     {
+        graphics_listen_for_events();
+
         ticks = graphics_millis();
 
         if(should_clear)

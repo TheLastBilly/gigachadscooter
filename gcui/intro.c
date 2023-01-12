@@ -1,11 +1,14 @@
 #include "graphics.h"
 
+#include "util.h"
+
 #include <stdlib.h>
 
 #define INTRO_LOGO                                  "images/gigachadguy.png"
 #define INTRO_FADE_DELAY                            5
 #define INTRO_REST_DELAY                            1000
-#define INTRO_MAX_ALPHA                             255
+#define INTRO_ALPHA_STEP                            5
+#define INTRO_MAX_ALPHA                             (255/INTRO_ALPHA_STEP)
 #define INTRO_BACKGROUND                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 void
@@ -32,7 +35,7 @@ play_intro( void )
     while(true)
     {
         last_update = graphics_millis();
-        graphics_set_sprite_alpha(&sprite, i);
+        graphics_set_sprite_alpha(&sprite, min(INTRO_MAX_ALPHA, i*INTRO_ALPHA_STEP));
 
         graphics_clear();
         graphics_draw_sprite(&sprite, w, h, x, y, 0, 0, 0);

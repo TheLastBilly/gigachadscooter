@@ -397,12 +397,20 @@ graphics_clear( void )
 }
 
 int
+graphics_listen_for_events( void )
+{
+    SDL_Event event = {};
+
+    SDL_PollEvent(&event);
+    return 0;
+}
+
+int
 graphics_render( void )
 {
     SDL_Event event = {};
     
     SDL_RenderPresent(sdl.renderer);
-    SDL_PollEvent(&event);
     return 0;
 }
 

@@ -15,7 +15,7 @@
 #define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
 #define SDL_DEFAULT_WINDOW_FLAGS                                0
-#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_SOFTWARE
+#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_ACCELERATED
 
 #define SDL_DEFAULT_FONTS_SIZE                                  18
 

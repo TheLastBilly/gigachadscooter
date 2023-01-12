@@ -88,7 +88,7 @@ struct mema_context
 
 // Meant for internal use.
 // Context for the garbage collector global allocations
-struct mema_context _mema_global;
+extern struct mema_context _mema_global;
 
 void _mema_free_all(struct mema_context * ctx);
 void * _mema_last_block(struct mema_context * ctx);

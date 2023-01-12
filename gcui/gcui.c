@@ -56,18 +56,23 @@ extern void play_intro( void );
 int 
 main(int argc, char const *argv[])
 {
-    int i = 0;
+    int i = 0, ret = 0;
     uint32_t ticks = 0, delta = 0;
     comm_t comm = {0};
     comm_buffer_t buffer = {0};
 
     gmema_init();
 
-    graphics_init();
+    ret = graphics_init();
+    if(ret != 0)
+    {
+        err("failed to initialize graphics");
+        return ret;
+    }
 
     graphics_set_background_color(BACKGROUND_COLOR);
 
-    play_intro();
+    // play_intro();
 
     graphics_clear();
 

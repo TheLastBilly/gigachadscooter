@@ -10,7 +10,7 @@
 #include "log.h"
 #include "util.h"
 
-#define SDL_HARDCODED_DISPLAY                                   ":4.0"
+// #define SDL_HARDCODED_DISPLAY                                   ":1.0"
 
 #define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
@@ -126,9 +126,15 @@ graphics_init( void )
 #endif
 
     if(SDL_Init(SDL_DEFAULT_FLAGS) != 0)
+    {
+        err("failed to cinitialize SDL: %s", SDL_GetError());
         return -1;
+    }
     if(IMG_Init(SDL_IMAGE_DEFAULT_FLAGS) != SDL_IMAGE_DEFAULT_FLAGS)
+    {
+        err("failed to cinitialize SDL_Image: %s", SDL_GetError());
         return -1;
+    }
 
     sdl.window = SDL_CreateWindow( APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
         10, 10, SDL_DEFAULT_WINDOW_FLAGS);
@@ -144,7 +150,10 @@ graphics_init( void )
     
     sdl.renderer = SDL_CreateRenderer( sdl.window, -1, SDL_DEFAULT_RENDERER_FLAGS );
     if(!sdl.renderer)
+    {
+        err("failed to create renderer: %s", SDL_GetError());
         return -1;
+    }
 
     if(!sdl.window)
         return -1;

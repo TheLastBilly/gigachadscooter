@@ -1,7 +1,6 @@
 #include "graphics.h"
 #include "log.h"
 #include "util.h"
-#include "comm.h"
 
 #include <signal.h>
 #include <unistd.h>
@@ -58,8 +57,6 @@ main(int argc, char const *argv[])
     int i = 0, ret = 0;
     bool should_clear = true, clear_requested = false;
     uint32_t ticks = 0, delta = 0;
-    comm_t comm = {0};
-    comm_buffer_t buffer = {0};
 
     gmema_init();
 
@@ -85,12 +82,8 @@ main(int argc, char const *argv[])
     while(keep_running)
     {
         graphics_listen_for_events();
-
-        if(should_clear)
-        {
-            dbg("clear screen requested");
-            graphics_clear();
-        }
+        
+        graphics_clear();
         
         clear_requested = false;
         for(i = 0; i < visuals.len; i++)
@@ -100,11 +93,12 @@ main(int argc, char const *argv[])
                 clear_requested = true;
         }
         
-        should_clear = clear_requested && !should_clear;
+        // should_clear = clear_requested && !should_clear;
 
-        if ((graphics_millis() - ticks) >= MAIN_THREAD_WAIT) {
-            graphics_render();
+        delta = (graphics_millis() - ticks);
+        if (delta >= MAIN_THREAD_WAIT || graphics_should_render()) {
             ticks = graphics_millis();
+            graphics_render();
         }
 
         graphics_msleep(1);

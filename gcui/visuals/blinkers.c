@@ -4,9 +4,7 @@
 #include <math.h>
 
 #include "log.h"
-#include "comm.h"
 #include "geometry.h"
-#include "commons.h"
 
 #define BLINKERS_X                      0.025
 #define BLINKERS_Y                      0.775
@@ -23,12 +21,6 @@ typedef struct ctx_t
 {
     struct
     {
-        comm_t comm;
-        comm_buffer_t buffer;
-    } comm;
-
-    struct
-    {
         bool blink_on;
         uint32_t last_update;
     } blinker[2];
@@ -42,7 +34,6 @@ init( void )
 {
     int ret = 0;
 
-    comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/blinker.sock");
     ret = graphics_load_sprite(BLINKERS_ICON_PATH, &ctx.sprite);
     if(ret < 0)
         abort();
@@ -51,19 +42,22 @@ init( void )
 static bool
 draw( bool redraw )
 {
-    int i = 0;
+    int i = 0, ret = 0;
+    char * buffer = NULL;
     bool r = false, l = false, should_clear = false;
 
     static bool was_on[2] = {0};
 
-    comm_read(&ctx.comm.comm, &ctx.comm.buffer);
+    ret = read_file(VISUAL_SOCKET_BASE "/blinker.sock", &buffer, NULL);
+    if(ret)
+        return false;
 
-    if(strcmp(ctx.comm.buffer.data, "R") == 0)
+    if(strcmp(buffer, "R") == 0)
         r = true;
-    else if(strcmp(ctx.comm.buffer.data, "L") == 0)
+    else if(strcmp(buffer, "L") == 0)
         l = true;
 
-    if(strcmp(ctx.comm.buffer.data, "LR") == 0)
+    if(strcmp(buffer, "LR") == 0)
     {
         r = l = true;
         ctx.blinker[0] = ctx.blinker[1];
@@ -109,7 +103,6 @@ on_wake( void )
 static void
 terminate( void )
 {
-    comm_destroy(&ctx.comm.comm);
     graphics_free_sprite(&ctx.sprite);
 }
 

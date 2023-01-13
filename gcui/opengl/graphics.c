@@ -49,6 +49,8 @@ typedef struct gl_context_t
     // SDL_Renderer * renderer;
     rgba_t background_color;
 
+    bool should_render;
+
     struct 
     {
         int width;
@@ -115,6 +117,14 @@ const font_request_t FONT_REQUESTS[] = {
     DEFINE_FONT(GRAPHICS_FONT_MONOID_128, "Monoid/Monoid-Regular.ttf", 128)
 };
 
+void
+on_window_size_changed(GLFWwindow* window, int width, int height)
+{
+    gl.screen.width = width;
+    gl.screen.height = height;
+    gl.should_render = true;
+}
+
 int
 graphics_init( void )
 {
@@ -154,6 +164,8 @@ graphics_init( void )
     glfwGetWindowSize(gl.window, &gl.screen.width, &gl.screen.height);
     glfwMakeContextCurrent(gl.window);
     glfwWindowHint(GLFW_SAMPLES, 4);
+
+    glfwSetWindowSizeCallback(gl.window, on_window_size_changed);
 
     if(glewInit() != GLEW_OK)
         return -1;
@@ -553,4 +565,13 @@ void
 graphics_msleep( uint32_t sleep )
 {
     msleep(sleep);
+}
+
+bool graphics_should_render( void )
+{
+    bool tmp = false;
+
+    tmp = gl.should_render;
+    gl.should_render = false;
+    return tmp;
 }

@@ -3,7 +3,6 @@
 
 #include "util.h"
 #include "graphics.h"
-#include "comm.h"
 
 #define VISUAL_SOCKET_BASE                              "/tmp/"
 

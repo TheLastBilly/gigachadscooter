@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "log.h"
-#include "comm.h"
 #include "geometry.h"
 #include "commons.h"
 
@@ -29,19 +28,8 @@
 #define BATTERY_END_IDX                         0
 #endif
 
-typedef struct ctx_t
-{
-    struct
-    {
-        comm_t comm;
-        comm_buffer_t buffer;
-    } comm;
-
-} ctx_t;
-
 extern int errno;
 
-static ctx_t ctx = {0};
 static commons_bars_t bars = (commons_bars_t){
     .h = BATTERY_BAR_HEIGHT,
     .w = BATTERY_BAR_WIDTH,
@@ -57,23 +45,27 @@ static commons_bars_t bars = (commons_bars_t){
 static void
 init( void )
 {
-    comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/battery.sock");
 }
 
 static bool
 draw( bool redraw )
 {
-    char buf[BATTERY_MAX_LEN + 2] = {0}; 
+    int ret = 0;
+    char *buffer = NULL;
     long long level = 0;
+    char buf[BATTERY_MAX_LEN + 2] = {0}; 
 
     static long long past_level = 0;
 
-    comm_read(&ctx.comm.comm, &ctx.comm.buffer);
-    if(ctx.comm.buffer.len > BATTERY_MAX_LEN)
-        return false;
+
+    ret = read_file(VISUAL_SOCKET_BASE "/battery.sock", &buffer, NULL);
+    if(!ret)
+    {
+        level = strtolmm(buffer, NULL,BATTERY_MIN_VAL, BATTERY_MAX_VAL, 10);
+    }
+    else
+        level = 0;
     
-    level = strtolmm(ctx.comm.buffer.data, NULL,
-        BATTERY_MIN_VAL, BATTERY_MAX_VAL, 10);
 
     if(!redraw && past_level == level)
         return false;
@@ -101,7 +93,6 @@ on_wake( void )
 static void
 terminate( void )
 {
-    comm_destroy(&ctx.comm.comm);
 }
 
 static const visual_t visual = (visual_t){

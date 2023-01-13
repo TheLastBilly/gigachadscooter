@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "log.h"
-#include "comm.h"
 #include "geometry.h"
 #include "commons.h"
 
@@ -18,17 +17,6 @@
 #define TEMPERATURE_TEXT_BUFFER_LEN             10
 #define TEMPERATURE_FONT_COLOR                  GRAPHICS_HEX2RGBA(0xffffffff)
 
-typedef struct ctx_t
-{
-    struct
-    {
-        comm_t comm;
-        comm_buffer_t buffer;
-    } comm;
-
-} ctx_t;
-static ctx_t ctx = {0};
-
 extern int errno;
 
 static char 
@@ -37,21 +25,25 @@ TEMPERATURE_BUFFER[TEMPERATURE_TEXT_BUFFER_LEN] = {0};
 static void
 init( void )
 {
-    comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/temperature.sock");
 }
 
 static bool
 draw( bool redraw )
 {
+    int ret = 0;
+    char *temp_data = NULL;
     float temp = 0.0f;
 
     static float last_temp = 0.0f;
 
-    comm_read(&ctx.comm.comm, &ctx.comm.buffer);
-    if(ctx.comm.buffer.len > TEMPERATURE_TEXT_BUFFER_LEN)
-        return false;
+    ret = read_file(VISUAL_SOCKET_BASE "/temperature.sock", &temp_data, NULL);
+    if(!ret)
+    {
+        temp = strtof(temp_data, NULL);
+    }
+    else
+        temp = 0.f;
     
-    temp = strtof(ctx.comm.buffer.data, NULL);
     if(temp < TEMPERATURE_MIN_VAL || temp > TEMPERATURE_MAX_VAL)
         return false;
 
@@ -79,7 +71,6 @@ on_wake( void )
 static void
 terminate( void )
 {
-    comm_destroy(&ctx.comm.comm);
 }
 
 static const visual_t visual = (visual_t){

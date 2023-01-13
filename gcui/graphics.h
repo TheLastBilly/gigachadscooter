@@ -98,6 +98,7 @@ int graphics_rotate_polygons( polygon_t * polygons, int len, float t );
 int graphics_translate_polygons( polygon_t * polygons, int len, float x, float y );
 int graphics_scale_polygons( polygon_t * polygons, int len, float w, float h );
 
+bool graphics_should_render( void );
 uint32_t graphics_millis( void );
 void graphics_msleep( uint32_t sleep );
 

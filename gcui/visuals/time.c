@@ -4,7 +4,6 @@
 #include <math.h>
 
 #include "log.h"
-#include "comm.h"
 #include "geometry.h"
 #include "commons.h"
 

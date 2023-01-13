@@ -4,7 +4,6 @@
 
 #include "commons.h"
 #include "log.h"
-#include "comm.h"
 
 #define VISUAL_X                                -1.0
 #define VISUAL_Y                                .685
@@ -37,19 +36,7 @@
 #define SPEED_END_IDX                           0
 #endif
 
-typedef struct ctx_t
-{
-    struct
-    {
-        comm_t comm;
-        comm_buffer_t buffer;
-    } comm;
-
-} ctx_t;
-
 extern int errno;
-
-static ctx_t ctx = {0};
 
 rgba_t 
 bar_color_cb(float t, float value, int bar)
@@ -89,23 +76,25 @@ draw_text(const char * text)
 static void
 init( void )
 {
-    comm_init(&ctx.comm.comm, VISUAL_SOCKET_BASE "/speedometer.sock");
 }
 
 static bool
 draw( bool redraw )
 {
     char buf[SPEED_MAX_LEN + 2] = {0}; 
+    char * speed_data = NULL;
     long long speed = 0;
+    int ret = 0;
 
     static long long last_speed = 0;
 
-    comm_read(&ctx.comm.comm, &ctx.comm.buffer);
-    if(ctx.comm.buffer.len > SPEED_MAX_LEN)
-        return false;
-    
-    speed = strtolmm(ctx.comm.buffer.data, NULL,
-        SPEED_MIN_VAL, SPEED_MAX_VAL, 10);
+    ret = read_file(VISUAL_SOCKET_BASE "/speedometer.sock", &speed_data, NULL);
+    if(!ret)
+    {
+        speed = strtolmm(speed_data, NULL, SPEED_MIN_VAL, SPEED_MAX_VAL, 10);
+    }
+    else
+        speed = 0;
 
     snprintf(buf, SPEED_MAX_LEN, "%lli", speed);
 
@@ -132,7 +121,6 @@ on_wake( void )
 static void
 terminate( void )
 {
-    comm_destroy(&ctx.comm.comm);
 }
 
 static const visual_t visual = (visual_t){

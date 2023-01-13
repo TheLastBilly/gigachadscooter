@@ -7,6 +7,8 @@ find_package(PkgConfig REQUIRED)
 find_package(X11 REQUIRED)
 find_package(OpenGL REQUIRED)
 find_package(glfw3 REQUIRED)
+find_package(Freetype REQUIRED)
+find_package(GLEW REQUIRED)
 
 include(FindPkgConfig)
 
@@ -20,6 +22,8 @@ include_directories(${SDL2IMAGE_INCLUDE_DIRS})
 include_directories(${SDL2TTF_INCLUDE_DIRS})
 include_directories(${SDL2GFX_INCLUDE_DIRS})
 include_directories(${OPENGL_INCLUDE_DIR})
+include_directories(${FREETYPE_INCLUDE_DIRS})
+include_directories(${GLEW_INCLUDE_DIRS})
 
 include_directories("${CMAKE_SOURCE_DIR}")
 
@@ -35,5 +39,7 @@ target_link_libraries(gcui
     ${SDL2TTF_LIBRARIES}
     ${SDL2GFX_LIBRARIES}
     ${OPENGL_gl_LIBRARY} 
+    ${FREETYPE_LIBRARIES}
+    ${GLEW_LIBRARIES}
     glfw
 )

@@ -1,8 +1,13 @@
+#include <GL/glew.h>
 #include <GLFW/glfw3.h>
+
+#include <ft2build.h>
+#include FT_FREETYPE_H  
 
 #include "graphics.h"
 #include "geometry.h"
 #include "log.h"
+#include "shader.h"
 
 #include "log.h"
 #include "util.h"
@@ -51,11 +56,29 @@ typedef struct gl_context_t
         int index;
     } screen;
 
-    // struct
-    // {
-    //     TTF_Font ** data;
-    //     size_t len;
-    // } fonts;
+    struct
+    {
+        FT_Face * data;
+        size_t len;
+
+        FT_Library ft;
+
+        struct
+        {
+            struct
+            {
+                GLint texture;
+                GLint color;
+            } uniforms;
+
+            struct
+            {
+                GLint coord;
+            } attr;
+
+            GLuint program;
+        } shader;
+    } fonts;
 
     // struct
     // {
@@ -72,6 +95,13 @@ typedef struct font_request_t
     const char *path;
     int size;
 } font_request_t;
+
+typedef struct point {
+	GLfloat x;
+	GLfloat y;
+	GLfloat s;
+	GLfloat t;
+} point;
 
 static gl_context_t gl;
 
@@ -105,7 +135,7 @@ graphics_init( void )
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    
+
     gl.window = glfwCreateWindow(640, 480, "gcui", NULL, NULL);
     if(!gl.window)
         return -1;
@@ -113,24 +143,67 @@ graphics_init( void )
     glfwMakeContextCurrent(gl.window);
     glfwWindowHint(GLFW_SAMPLES, 4);
 
-    // gl.fonts.len = arrlen(FONT_REQUESTS);
-    // if(gl.fonts.len > 0)
-    // {
-    //     gl.fonts.data = gcalloc(sizeof(gl.fonts.data[0]), gl.fonts.len);
+    if(glewInit() != GLEW_OK)
+        return -1;
 
-    //     for(i = 0; i < gl.fonts.len; i++)
-    //     {
-    //         path = get_assets_global_path(FONT_REQUESTS[i].path);
+    if(FT_Init_FreeType(&gl.fonts.ft))
+    {
+        err("failed to initialize ft fonts");
+        return -1;
+    }
 
-    //         gl.fonts.data[i] = TTF_OpenFont(path, FONT_REQUESTS[i].size);
-    //         if(gl.fonts.data[i] == NULL)
-    //         {
-    //             err("cannot load font \"%s\" from \"%s\": %s", FONT_REQUESTS[i].name, path,
-    //                 TTF_GetError());
-    //             return -1;
-    //         }
-    //     }
-    // }
+    gl.fonts.len = arrlen(FONT_REQUESTS);
+    if(gl.fonts.len > 0)
+    {
+        const char *uniform_names[] = {"texture", "color"};
+        int uniforms[2] = {0};
+
+        gl.fonts.data = gcalloc(sizeof(gl.fonts.data[0]), gl.fonts.len);
+
+        for(i = 0; i < gl.fonts.len; i++)
+        {
+            path = graphics_get_assets_global_path(GRAPHICS_FONTS_PATH, FONT_REQUESTS[i].path);
+            if(FT_New_Face(gl.fonts.ft, path, 0, &gl.fonts.data[i]))
+            {
+                err("failed to load font \"%s\"", path);
+                return -1;
+            }
+
+            FT_Set_Pixel_Sizes(gl.fonts.data[i], 0, FONT_REQUESTS[i].size);
+        }
+
+        const char * vs = 
+        // "#version 120                               "
+        "attribute vec4 coord;                      "
+        "varying vec2 texcoord;                     "
+        "void main(void) {                          "
+        "    gl_Position = vec4(coord.xy, 0, 1);    "
+        "    texcoord = coord.zw;                   "
+        "}\0                                        ";
+        const char * fs =
+        // "#version 120                               "
+        "varying vec2 texcoord;                     "
+        "uniform sampler2D texture;                 "
+        "uniform vec4 color;                        "
+        "void main(void) {                          "
+        "    gl_FragColor = vec4(1, 1, 1,           "
+        "       texture2D(texture, texcoord).r) *   "
+        "           color;                          "
+        "}\0                                        ";
+
+        ret = shader_create(&gl.fonts.shader.program, vs, fs, 
+            NULL, NULL, 0);
+        if(ret)
+        {
+            err("failed to compile font shaders");
+            return -1;
+        }
+
+        gl.fonts.shader.uniforms.texture = uniforms[0];
+        gl.fonts.shader.uniforms.color = uniforms[1];
+        gl.fonts.shader.attr.coord = glGetAttribLocation(gl.fonts.shader.program,
+            "coord");
+    }
 
     return 0;
 }
@@ -272,58 +345,78 @@ graphics_get_window_size( int *width, int *height )
 }
 
 int
-graphics_draw_text( font_id_t font, float xp, float yp, rgba_t rgba, const char * text )
+graphics_draw_text( font_id_t font, float x, float y, rgba_t rgba, const char * text )
 {
     int ret = 0;
-    // SDL_Rect rect = {0};
-    // SDL_Surface * surface = NULL;
-    // SDL_Color color = {0};
-    // int x = 0, y = 0;
-
-    // color = RGBA2SDLCOLOR(rgba);
-
-    // if(strlen(text) < 1)
-    //     return 0;
-
-    // if(font >= _GRAPHICS_FONT_END || font < 0)
-    // {
-    //     err("unknown font (%d)", font);
-    //     return -1;
-    // }
-
-    // surface = TTF_RenderUTF8_Blended(gl.fonts.data[font], text, color);
-    // if(!surface)
-    // {
-    //     err("cannot create text surface: %s", TTF_GetError());
-    //     return -1;
-    // }
-
-    // if(gl.text.texture)
-    //     SDL_DestroyTexture(gl.text.texture);
+    const char *p = NULL;
+    GLuint texture = 0, vbo = 0;
+    GLfloat color[4] = {0};
+    FT_Face face = {0};
+    FT_GlyphSlot g = {0};
     
-    // gl.text.texture = SDL_CreateTextureFromSurface(gl.renderer, surface);
-    // if(!gl.text.texture)
-    // {
-    //     err("cannot create text texture: %s", SDL_GetError());
-    //     return -1;
-    // }
-    // SDL_SetTextureBlendMode(gl.text.texture, SDL_BLENDMODE_BLEND);
-
-    // gl.text.width = surface->w;
-    // gl.text.height = surface->h;
-
-    // SDL_FreeSurface(surface);
-
-    // rect.h = gl.text.height;
-    // rect.w = gl.text.width;
-
-    // x = xp;
-    // y = yp;
+    face = gl.fonts.data[font];
+    g = face->glyph;
     
-    // rect.x = x < 0 ? gl.screen.width/2 - rect.w/2 : x;
-    // rect.y = y < 0 ? gl.screen.height/2 - rect.h/2 : y;
-    
-    // SDL_RenderCopyEx(gl.renderer, gl.text.texture, NULL, &rect, 0, NULL, 0);
+    glUseProgram(gl.fonts.shader.program);
+
+    glGenBuffers(1, &vbo);
+    glActiveTexture(GL_TEXTURE0);
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+    glUniform1i(gl.fonts.shader.uniforms.texture, 0);
+
+    glPixelStorei(GL_UNPACK_ALIGNMENT, 1);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    glEnableVertexAttribArray(gl.fonts.shader.attr.coord);
+    glBindBuffer(GL_ARRAY_BUFFER, vbo);
+    glVertexAttribPointer(gl.fonts.shader.attr.coord, 4, GL_FLOAT, GL_FALSE, 0, 0);
+
+    color[0] = rgba.r/255.0f;
+    color[1] = rgba.g/255.0f;
+    color[2] = rgba.b/255.0f;
+    color[3] = rgba.a/255.0f;
+	glUniform4fv(gl.fonts.shader.uniforms.color, 1, color);
+
+    for (p = text; *p; p++) {
+		/* Try to load and render the character */
+		if (FT_Load_Char(face, *p, FT_LOAD_RENDER))
+			continue;
+
+		/* Upload the "bitmap", which contains an 8-bit grayscale image, as an alpha texture */
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_ALPHA, g->bitmap.width, g->bitmap.rows, 0, GL_ALPHA, GL_UNSIGNED_BYTE, g->bitmap.buffer);
+
+		/* Calculate the vertex and texture coordinates */
+		float x2 = x + g->bitmap_left * 1.0f;
+		float y2 = -y - g->bitmap_top * 1.0f;
+		float w = g->bitmap.width * 1.0f;
+		float h = g->bitmap.rows * 1.0f;
+
+		point box[4] = {
+			{x2, -y2, 0, 0},
+			{x2 + w, -y2, 1, 0},
+			{x2, -y2 - h, 0, 1},
+			{x2 + w, -y2 - h, 1, 1},
+		};
+
+		/* Draw the character on the screen */
+		glBufferData(GL_ARRAY_BUFFER, sizeof(box), box, GL_DYNAMIC_DRAW);
+		glDrawArrays(GL_TRIANGLE_STRIP, 0, 4);
+
+		/* Advance the cursor to the start of the next character */
+		x += (g->advance.x >> 6) * 1.0f;
+		y += (g->advance.y >> 6) * 1.0f;
+	}
+
+    glUseProgram(0);
+
+	glDisableVertexAttribArray(gl.fonts.shader.attr.coord);
+	glDeleteTextures(1, &texture);
+    glDeleteBuffers(1, &vbo);
 
     return ret;
 }
@@ -414,8 +507,6 @@ graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color )
         glEnd();
     }
 
-    // graphics_update_background();
-
     return 0;
 }
 
@@ -443,7 +534,7 @@ graphics_scale_polygons( polygon_t * polygons, int len, float w, float h )
 uint32_t
 graphics_millis( void )
 {
-    return (uint32_t)(glfwGetTime()/1000.0);
+    return (uint32_t)(roundl(glfwGetTime()*1000.0));
 }
 
 void

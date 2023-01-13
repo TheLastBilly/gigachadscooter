@@ -82,7 +82,7 @@ draw( bool redraw )
 
     snprintf(buf, BATTERY_MAX_LEN, "%lli%%", level);
     
-    graphics_draw_text(GRAPHICS_FONT_MONOID_28, VISUAL_TEXT_X, VISUAL_TEXT_Y, 
+    graphics_draw_text(GRAPHICS_FONT_MONOID_28, 0.5, 0.5, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
     draw_radius_bars(level, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
 

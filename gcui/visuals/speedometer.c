@@ -82,7 +82,7 @@ static commons_bars_t bars = (commons_bars_t){
 static inline void
 draw_text(const char * text)
 {
-    graphics_draw_text(SPEED_FONT, VISUAL_X, VISUAL_Y, SPEED_FONT_COLOR, 
+    graphics_draw_text(SPEED_FONT, 0.5, 0.5, SPEED_FONT_COLOR, 
         text);
 }
 

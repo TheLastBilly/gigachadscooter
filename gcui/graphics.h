@@ -66,7 +66,7 @@ graphics_get_assets_global_path( const char * relative, const char * path )
     }
 
     workdir = get_working_directory();
-    size = strlen(path) + arrlen(relative) + strlen(workdir) + 2;
+    size = strlen(path) + strlen(relative) + strlen(workdir) + 2;
     buf = gcalloc(size, sizeof(char));
     
     snprintf(buf, size, "%s/%s%s", workdir, relative, path);

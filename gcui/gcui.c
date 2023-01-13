@@ -81,11 +81,10 @@ main(int argc, char const *argv[])
 
     signal(SIGINT, signal_handler);
 
+    ticks = 0;
     while(keep_running)
     {
         graphics_listen_for_events();
-
-        ticks = graphics_millis();
 
         if(should_clear)
         {
@@ -101,18 +100,14 @@ main(int argc, char const *argv[])
                 clear_requested = true;
         }
         
-        if(should_clear)
-        {
-            dbg("new render requested");
-            graphics_render();
-        }
-        
         should_clear = clear_requested && !should_clear;
 
-        delta = graphics_millis() - ticks;
-        if (delta < MAIN_THREAD_WAIT) {
-            graphics_msleep(MAIN_THREAD_WAIT - delta);
+        if ((graphics_millis() - ticks) >= MAIN_THREAD_WAIT) {
+            graphics_render();
+            ticks = graphics_millis();
         }
+
+        graphics_msleep(1);
     }
 
     graphics_terminate();

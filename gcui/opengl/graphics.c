@@ -120,6 +120,8 @@ graphics_init( void )
 {
     int i = 0, ret = 0;
     const char * path = NULL;
+    const GLFWvidmode* mode = NULL;
+    GLFWmonitor * monitor = NULL;
 
     memset(&gl, 0, sizeof(gl));
     gmema_init();
@@ -136,7 +138,17 @@ graphics_init( void )
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 
-    gl.window = glfwCreateWindow(640, 480, "gcui", NULL, NULL);
+    monitor = glfwGetPrimaryMonitor();
+    mode = glfwGetVideoMode(monitor);
+ 
+    glfwWindowHint(GLFW_RED_BITS, mode->redBits);
+    glfwWindowHint(GLFW_GREEN_BITS, mode->greenBits);
+    glfwWindowHint(GLFW_BLUE_BITS, mode->blueBits);
+    glfwWindowHint(GLFW_REFRESH_RATE, mode->refreshRate);
+ 
+    // GLFWwindow* window = glfwCreateWindow(mode->width, mode->height, "My Title", monitor, NULL);
+
+    gl.window = glfwCreateWindow(mode->width, mode->height, "gcui", NULL, NULL);
     if(!gl.window)
         return -1;
     glfwGetWindowSize(gl.window, &gl.screen.width, &gl.screen.height);

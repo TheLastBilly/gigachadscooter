@@ -195,27 +195,8 @@ graphics_init( void )
 
             FT_Set_Pixel_Sizes(gl.fonts.data[i], 0, FONT_REQUESTS[i].size);
         }
-
-        const char * vs = 
-        // "#version 120                               "
-        "attribute vec4 coord;                      "
-        "varying vec2 texcoord;                     "
-        "void main(void) {                          "
-        "    gl_Position = vec4(coord.xy, 0, 1);    "
-        "    texcoord = coord.zw;                   "
-        "}\0                                        ";
-        const char * fs =
-        // "#version 120                               "
-        "varying vec2 texcoord;                     "
-        "uniform sampler2D texture;                 "
-        "uniform vec4 color;                        "
-        "void main(void) {                          "
-        "    gl_FragColor = vec4(1, 1, 1,           "
-        "       texture2D(texture, texcoord).r) *   "
-        "           color;                          "
-        "}\0                                        ";
-
-        ret = shader_create(&gl.fonts.shader.program, vs, fs, 
+        
+        ret = shader_create_from_file(&gl.fonts.shader.program, "assets/shaders/text.vs", "assets/shaders/text.fs", 
             NULL, NULL, 0);
         if(ret)
         {
@@ -223,10 +204,9 @@ graphics_init( void )
             return -1;
         }
 
-        gl.fonts.shader.uniforms.texture = uniforms[0];
-        gl.fonts.shader.uniforms.color = uniforms[1];
-        gl.fonts.shader.attr.coord = glGetAttribLocation(gl.fonts.shader.program,
-            "coord");
+        gl.fonts.shader.uniforms.texture = glGetUniformLocation(gl.fonts.shader.program, "tex");
+        gl.fonts.shader.uniforms.color = glGetUniformLocation(gl.fonts.shader.program, "color");
+        gl.fonts.shader.attr.coord = glGetAttribLocation(gl.fonts.shader.program, "coord");
     }
 
     return 0;
@@ -436,11 +416,11 @@ graphics_draw_text( font_id_t font, float x, float y, rgba_t rgba, const char * 
 		y += (g->advance.y >> 6) * 1.0f;
 	}
 
-    glUseProgram(0);
-
 	glDisableVertexAttribArray(gl.fonts.shader.attr.coord);
 	glDeleteTextures(1, &texture);
     glDeleteBuffers(1, &vbo);
+
+    glUseProgram(0);
 
     return ret;
 }

@@ -86,7 +86,10 @@ read_file(const char * file_path, char ** data, size_t *size)
 
     fp = fopen(file_path, "r");
     if(fp == NULL)
+    {
+        err("cannot open \"%s\"", file_path)
         return errno;
+    }
     
     fseek(fp, 0, SEEK_END);
     read_size = ftell(fp);

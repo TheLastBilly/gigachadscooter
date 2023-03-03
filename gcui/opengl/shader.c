@@ -93,3 +93,31 @@ shader_create(GLuint * program, const char * vertex_shader_source, const char * 
     
     return 0;
 }
+
+int
+shader_create_from_file(GLint * program, const char *vertex_shader_filename, 
+    const char *fragment_shader_filename, const char *uniform_names[], 
+    int *uniforms, size_t uniform_len)
+{
+    int ret = 0;
+    char *vertex_source = NULL, *fragment_source = NULL;
+
+    if((ret = read_file(vertex_shader_filename, &vertex_source, NULL)))
+    {
+        err("cannot open %s: %s", vertex_shader_filename, strerror(ret));
+        return ret;
+    }
+
+    if((ret = read_file(fragment_shader_filename, &fragment_source, NULL)))
+    {
+        err("cannot open %s: %s", fragment_shader_filename, strerror(ret));
+        return ret;
+    }
+
+    ret = shader_create(program, vertex_source, fragment_source,
+        uniform_names, uniforms, uniform_len);
+    if(ret)
+        return ret;
+    
+    return 0;
+}

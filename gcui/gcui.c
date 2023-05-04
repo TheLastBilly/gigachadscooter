@@ -5,6 +5,7 @@
 #include <signal.h>
 #include <unistd.h>
 #include <stdlib.h>
+#include <getopt.h>
 
 #include "visuals/visual.h"
 
@@ -12,7 +13,7 @@
 #define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 #define POST_INTRO_WAIT                             1000
-#define MAIN_THREAD_WAIT                            (1000/60)
+#define MAIN_THREAD_WAIT                            (1000/30)
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -52,13 +53,26 @@ static const visual_id_t MAIN_TAB[] =
 extern void play_intro( void );
 
 int 
-main(int argc, char const *argv[])
+main(int argc, char *argv[])
 {
+	int opt = 0;
     int i = 0, ret = 0;
     bool should_clear = true, clear_requested = false;
     uint32_t ticks = 0, delta = 0;
 
     gmema_init();
+   	
+   	while((opt = getopt(argc, argv, "r:")) != -1)
+   	{
+   		switch(opt)
+   		{
+   		case 'r':
+   			graphics_set_root(optarg);
+   			break;
+   		default:
+   			break;
+   		}
+   	}
 
     ret = graphics_init();
     if(ret != 0)
@@ -79,11 +93,9 @@ main(int argc, char const *argv[])
     signal(SIGINT, signal_handler);
 
     ticks = 0;
-    while(keep_running)
+    while(keep_running && !graphics_should_close())
     {
         graphics_listen_for_events();
-        
-        graphics_clear();
         
         clear_requested = false;
         for(i = 0; i < visuals.len; i++)
@@ -95,13 +107,16 @@ main(int argc, char const *argv[])
         
         // should_clear = clear_requested && !should_clear;
 
+		/*
         delta = (graphics_millis() - ticks);
-        if (delta >= MAIN_THREAD_WAIT || graphics_should_render()) {
+        if (delta >= MAIN_THREAD_WAIT) {
             ticks = graphics_millis();
-            graphics_render();
         }
+        */
 
-        graphics_msleep(1);
+        graphics_render();
+        graphics_msleep(MAIN_THREAD_WAIT);
+        graphics_clear();
     }
 
     graphics_terminate();

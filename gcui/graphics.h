@@ -10,7 +10,6 @@
 
 #define GRAPHICS_ASSETS_PATH                "assets/"
 #define GRAPHICS_FONTS_PATH                 GRAPHICS_ASSETS_PATH "fonts/"
-#define GRAPHICS_SHADERS_PATH               GRAPHICS_ASSETS_PATH "shaders/"
 
 #define GRAPHICS_HEX2RGBA(hex)              \
 (rgba_t){                                   \
@@ -51,6 +50,13 @@ typedef struct polygon_t
     } vertices[3];
 } polygon_t;
 
+extern const char *_graphics_root;
+
+static inline void
+graphics_set_root(const char *path)
+{
+	_graphics_root = path;	
+}
 
 static inline const char *
 graphics_get_assets_global_path( const char * relative, const char * path )
@@ -65,7 +71,11 @@ graphics_get_assets_global_path( const char * relative, const char * path )
         buf = NULL;
     }
 
-    workdir = get_working_directory();
+	if(_graphics_root == NULL)
+    	workdir = get_working_directory();
+	else
+		workdir = _graphics_root;
+	
     size = strlen(path) + strlen(relative) + strlen(workdir) + 2;
     buf = gcalloc(size, sizeof(char));
     
@@ -99,6 +109,7 @@ int graphics_translate_polygons( polygon_t * polygons, int len, float x, float y
 int graphics_scale_polygons( polygon_t * polygons, int len, float w, float h );
 
 bool graphics_should_render( void );
+bool graphics_should_close();
 uint32_t graphics_millis( void );
 void graphics_msleep( uint32_t sleep );
 

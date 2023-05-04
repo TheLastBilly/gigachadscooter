@@ -47,6 +47,7 @@ typedef struct sdl_context_t
     SDL_Window * window;
     SDL_Renderer * renderer;
     SDL_Color background_color;
+    SDL_Event last_event;
 
     struct 
     {
@@ -77,7 +78,9 @@ typedef struct font_request_t
     int size;
 } font_request_t;
 
-static sdl_context_t sdl;
+static sdl_context_t sdl = {0};
+
+const char * _graphics_root = NULL;
 
 const font_request_t FONT_REQUESTS[] = {
     DEFINE_FONT(GRAPHICS_FONT_MONOID_12, "Monoid/Monoid-Regular.ttf", 12),
@@ -214,10 +217,12 @@ graphics_load_sprite( const char * path, sprite_t * sprite )
         gfree(buf);
         buf = NULL;
     }
-
-    workdir = get_working_directory();
-    size = strlen(GRAPHICS_ASSETS_PATH) + strlen(path) + 
-        strlen(workdir) + 3;
+	
+	if(_graphics_root == NULL)
+    	workdir = get_working_directory();
+    else
+    	workdir = _graphics_root;
+    size = 200;
     buf = gcalloc(1, size);
     snprintf(buf, size, "%s/%s/%s", workdir, GRAPHICS_ASSETS_PATH, path);
 
@@ -251,6 +256,11 @@ graphics_free_sprite( sprite_t * sprite )
     return 0;
 }
 
+bool 
+graphics_should_close()
+{
+	return sdl.last_event.type == SDL_QUIT;	
+}
 
 int 
 graphics_set_sprite_alpha( sprite_t * sprite, uint8_t alpha )
@@ -380,6 +390,7 @@ graphics_listen_for_events( void )
     SDL_Event event = {};
 
     SDL_PollEvent(&event);
+    sdl.last_event = event;
     return 0;
 }
 
@@ -401,7 +412,7 @@ graphics_set_background_color( rgba_t rgba )
     return 0;
 }
 
-static int
+int
 graphics_update_background()
 {
     graphics_set_background_color(SDLCOLOR2RGBA(sdl.background_color));

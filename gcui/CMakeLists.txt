@@ -1,9 +1,16 @@
+project(gcui)
+cmake_minimum_required(VERSION 3.0)
+
 set(CMAKE_C_STANDARD 11)
 
 find_package(PkgConfig REQUIRED)
 find_package(X11 REQUIRED)
 
 include(FindPkgConfig)
+
+if(DEFINED TOOLCHAIN_PATH)
+	include(cmake/toolchain.cmake)
+endif()
 
 pkg_search_module(SDL2 REQUIRED sdl2)
 pkg_search_module(SDL2IMAGE REQUIRED SDL2_image)

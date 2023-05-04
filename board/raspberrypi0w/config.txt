@@ -1,0 +1,7 @@
+kernel=zImage
+disable_overscan=1
+gpu_mem=100
+dtoverlay=miniuart-bt
+enable_uart=1
+boot_delay=0
+disable_splash=1

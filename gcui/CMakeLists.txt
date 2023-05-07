@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.0)
 
 set(CMAKE_C_STANDARD 11)
 
-if(DEFINED TOOLCHAIN_PATH)
+if(DEFINED BUILDROOT_PATH)
 	include(cmake/toolchain.cmake)
 endif()
 

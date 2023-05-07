@@ -10,12 +10,12 @@
 #include "log.h"
 #include "util.h"
 
-#define SDL_HARDCODED_DISPLAY                                   ":1.0"
+//#define SDL_HARDCODED_DISPLAY                                   ":1.0"
 
 #define SDL_IMAGE_DEFAULT_FLAGS                                 (IMG_INIT_JPG | IMG_INIT_PNG)
 #define SDL_DEFAULT_FLAGS                                       SDL_INIT_VIDEO
 #define SDL_DEFAULT_WINDOW_FLAGS                                0
-#define SDL_DEFAULT_RENDERER_FLAGS                              SDL_RENDERER_ACCELERATED
+#define SDL_DEFAULT_RENDERER_FLAGS                              0//SDL_RENDERER_ACCELERATED
 
 #define SDL_DEFAULT_FONTS_SIZE                                  18
 
@@ -117,7 +117,7 @@ graphics_init( void )
         return -1;
     }
 
-    sdl.window = SDL_CreateWindow( APP_NAME, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED,
+    sdl.window = SDL_CreateWindow( APP_NAME, 0, 0,
         10, 10, SDL_DEFAULT_WINDOW_FLAGS);
 
     sdl.screen.index = SDL_GetWindowDisplayIndex(sdl.window);
@@ -126,7 +126,8 @@ graphics_init( void )
     sdl.screen.height = dm.h;
     sdl.screen.width = dm.w;
     
-    SDL_SetWindowSize(sdl.window, sdl.screen.width, sdl.screen.height);
+    //SDL_SetWindowSize(sdl.window, sdl.screen.width, sdl.screen.height);
+    SDL_SetWindowSize(sdl.window, 640, 480);
     SDL_SetWindowFullscreen(sdl.window, SDL_WINDOW_FULLSCREEN);
     
     sdl.renderer = SDL_CreateRenderer( sdl.window, -1, SDL_DEFAULT_RENDERER_FLAGS );
@@ -259,7 +260,8 @@ graphics_free_sprite( sprite_t * sprite )
 bool 
 graphics_should_close()
 {
-	return sdl.last_event.type == SDL_QUIT;	
+	return sdl.last_event.type == SDL_QUIT ||
+		(sdl.last_event.type == SDL_KEYDOWN && sdl.last_event.key.keysym.sym == SDLK_q);
 }
 
 int 

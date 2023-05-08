@@ -97,6 +97,8 @@ main(int argc, char *argv[])
     {
         graphics_listen_for_events();
         
+        graphics_clear();
+        
         clear_requested = false;
         for(i = 0; i < visuals.len; i++)
         {
@@ -107,17 +109,15 @@ main(int argc, char *argv[])
         
         // should_clear = clear_requested && !should_clear;
 
-		/*
         delta = (graphics_millis() - ticks);
         if (delta >= MAIN_THREAD_WAIT) {
             ticks = graphics_millis();
+            graphics_render();
         }
-        */
 
-        graphics_render();
-        graphics_msleep(MAIN_THREAD_WAIT);
-        graphics_clear();
+        graphics_msleep(1);
     }
+
 
     graphics_terminate();
 

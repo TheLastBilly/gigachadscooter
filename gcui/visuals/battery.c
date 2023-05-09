@@ -74,7 +74,7 @@ draw( bool redraw )
 
     snprintf(buf, BATTERY_MAX_LEN, "%lli%%", level);
     
-    graphics_draw_text(GRAPHICS_FONT_MONOID_64, 1- 0.545, 1 - 0.0725, 
+    graphics_draw_text(GRAPHICS_FONT_MONOID_22, 1- 0.55, 1 - 0.06, 
         GRAPHICS_HEX2RGBA(0xffffffff), buf);
     draw_radius_bars(level, &bars, GRAPHICS_HEX2RGBA(0xffffffff));
 

@@ -85,9 +85,14 @@ static sdl_context_t sdl = {0};
 const char * _graphics_root = NULL;
 
 const font_request_t FONT_REQUESTS[] = {
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_2, "Monoid/Monoid-Regular.ttf", 2),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_4, "Monoid/Monoid-Regular.ttf", 4),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_6, "Monoid/Monoid-Regular.ttf", 6),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_12, "Monoid/Monoid-Regular.ttf", 12),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_18, "Monoid/Monoid-Regular.ttf", 18),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_22, "Monoid/Monoid-Regular.ttf", 22),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_32, "Monoid/Monoid-Regular.ttf", 32),
+    DEFINE_FONT(GRAPHICS_FONT_MONOID_48, "Monoid/Monoid-Regular.ttf", 48),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_26, "Monoid/Monoid-Regular.ttf", 26),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_28, "Monoid/Monoid-Regular.ttf", 28),
     DEFINE_FONT(GRAPHICS_FONT_MONOID_64, "Monoid/Monoid-Regular.ttf", 64),
@@ -121,16 +126,19 @@ graphics_init( void )
 
     sdl.window = SDL_CreateWindow( APP_NAME, 0, 0,
         640, 480, SDL_DEFAULT_WINDOW_FLAGS);
-
+	
+	SDL_ShowCursor(0);
     sdl.screen.index = SDL_GetWindowDisplayIndex(sdl.window);
     SDL_GetCurrentDisplayMode(sdl.screen.index, &dm);
 
-    sdl.screen.height = dm.h;
-    sdl.screen.width = dm.w;
+    //sdl.screen.height = dm.h;
+    //sdl.screen.width = dm.iw;
     
-    SDL_SetWindowSize(sdl.window, sdl.screen.width, sdl.screen.height);
+    //SDL_SetWindowSize(sdl.window, sdl.screen.width, sdl.screen.height);
     //SDL_SetWindowSize(sdl.window, 640, 480);
-    //SDL_SetWindowFullscreen(sdl.window, SDL_WINDOW_FULLSCREEN);
+    SDL_SetWindowFullscreen(sdl.window, SDL_WINDOW_FULLSCREEN);
+    
+    SDL_GetWindowSize(sdl.window, &sdl.screen.width, &sdl.screen.height);
     
     sdl.renderer = SDL_CreateRenderer( sdl.window, -1, SDL_DEFAULT_RENDERER_FLAGS );
     if(!sdl.renderer)

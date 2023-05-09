@@ -7,7 +7,7 @@
 
 #define VISUAL_X                                -1.0
 #define VISUAL_Y                                .685
-#define SPEED_FONT                              GRAPHICS_FONT_MONOID_128
+#define SPEED_FONT                              GRAPHICS_FONT_MONOID_48
 #define SPEED_FONT_COLOR                        GRAPHICS_HEX2RGBA(0xffffffff)
 
 #define SPEED_MAX_VAL                           80
@@ -69,7 +69,7 @@ static commons_bars_t bars = (commons_bars_t){
 static inline void
 draw_text(const char * text)
 {
-    graphics_draw_text(SPEED_FONT, 1- 0.55, 1 - 0.3125, SPEED_FONT_COLOR, 
+    graphics_draw_text(SPEED_FONT, 1- 0.5525, 1 - 0.25, SPEED_FONT_COLOR, 
       text);
 }
 

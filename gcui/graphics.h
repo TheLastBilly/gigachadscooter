@@ -103,6 +103,7 @@ int graphics_update_background();
 int graphics_load_sprite( const char * path, sprite_t * sprite);
 int graphics_render_sprite( float x, float y, float w, float h, sprite_t * sprite );
 int graphics_draw_polygons( polygon_t * polygons, int len, rgba_t color );
+int graphics_vertical_flip( bool value );
 
 int graphics_rotate_polygons( polygon_t * polygons, int len, float t );
 int graphics_translate_polygons( polygon_t * polygons, int len, float x, float y );

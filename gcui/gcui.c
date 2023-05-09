@@ -13,7 +13,7 @@
 #define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 #define POST_INTRO_WAIT                             1000
-#define MAIN_THREAD_WAIT                            (1000/30)
+#define MAIN_THREAD_WAIT                            (1000/15)
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -57,15 +57,18 @@ main(int argc, char *argv[])
 {
 	int opt = 0;
     int i = 0, ret = 0;
-    bool should_clear = true, clear_requested = false;
+    bool should_clear = true, clear_requested = false, vflip = false;
     uint32_t ticks = 0, delta = 0;
 
     gmema_init();
    	
-   	while((opt = getopt(argc, argv, "r:")) != -1)
+   	while((opt = getopt(argc, argv, "fr:")) != -1)
    	{
    		switch(opt)
    		{
+   		case 'f':
+            vflip = true;
+   			break;
    		case 'r':
    			graphics_set_root(optarg);
    			break;
@@ -80,6 +83,9 @@ main(int argc, char *argv[])
         err("failed to initialize graphics");
         return ret;
     }
+
+    if(vflip)
+        graphics_vertical_flip(true);
 
     graphics_set_background_color(BACKGROUND_COLOR);
 

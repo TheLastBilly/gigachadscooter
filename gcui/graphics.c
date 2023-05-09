@@ -49,6 +49,8 @@ typedef struct sdl_context_t
     SDL_Color background_color;
     SDL_Event last_event;
 
+	bool vflip;
+
     struct 
     {
         int width;
@@ -118,7 +120,7 @@ graphics_init( void )
     }
 
     sdl.window = SDL_CreateWindow( APP_NAME, 0, 0,
-        10, 10, SDL_DEFAULT_WINDOW_FLAGS);
+        640, 480, SDL_DEFAULT_WINDOW_FLAGS);
 
     sdl.screen.index = SDL_GetWindowDisplayIndex(sdl.window);
     SDL_GetCurrentDisplayMode(sdl.screen.index, &dm);
@@ -128,7 +130,7 @@ graphics_init( void )
     
     SDL_SetWindowSize(sdl.window, sdl.screen.width, sdl.screen.height);
     //SDL_SetWindowSize(sdl.window, 640, 480);
-    SDL_SetWindowFullscreen(sdl.window, SDL_WINDOW_FULLSCREEN);
+    //SDL_SetWindowFullscreen(sdl.window, SDL_WINDOW_FULLSCREEN);
     
     sdl.renderer = SDL_CreateRenderer( sdl.window, -1, SDL_DEFAULT_RENDERER_FLAGS );
     if(!sdl.renderer)
@@ -201,6 +203,13 @@ graphics_terminate( void )
         SDL_DestroyWindow(sdl.window);
 
     SDL_Quit();
+}
+
+int
+graphics_vertical_flip( bool value )
+{
+	sdl.vflip = value;
+	return 0;
 }
 
 int
@@ -398,9 +407,27 @@ graphics_listen_for_events( void )
 
 int
 graphics_render( void )
-{
-    SDL_Event event = {};
-    
+{    
+	if(sdl.vflip)
+	{
+		SDL_Surface *surface = SDL_CreateRGBSurface(0, sdl.screen.width, sdl.screen.height, 32, 
+			0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000);
+		SDL_RenderReadPixels(sdl.renderer, NULL, SDL_PIXELFORMAT_ARGB8888, 
+			surface->pixels, surface->pitch);
+		
+    	SDL_Texture * texture = SDL_CreateTextureFromSurface(sdl.renderer, surface);
+    	if(texture == NULL)
+    		return 1;
+    	
+    	SDL_FreeSurface(surface);
+    	
+    	SDL_Rect rect = {0};
+	    rect.h = sdl.screen.height;
+	    rect.w = sdl.screen.width;
+	    rect.y = rect.x = 0;
+    	SDL_RenderCopyEx(sdl.renderer, texture, NULL, &rect, 0, NULL, SDL_FLIP_VERTICAL);
+    	SDL_DestroyTexture(texture);
+	}
     SDL_RenderPresent(sdl.renderer);
     return 0;
 }

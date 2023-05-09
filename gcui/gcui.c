@@ -13,7 +13,7 @@
 #define BACKGROUND_COLOR                            GRAPHICS_HEX2RGBA(0x222222ff)
 
 #define POST_INTRO_WAIT                             1000
-#define MAIN_THREAD_WAIT                            (1000/15)
+#define MAIN_THREAD_WAIT                            (1000/30)
 
 #define SET_CURRENT_VISUALS(_v)                     \
 {                                                   \
@@ -103,6 +103,14 @@ main(int argc, char *argv[])
     {
         graphics_listen_for_events();
         
+        // should_clear = clear_requested && !should_clear;
+
+        delta = (graphics_millis() - ticks);
+        if (delta < MAIN_THREAD_WAIT) {
+            graphics_msleep(1);
+            continue;
+        }
+
         graphics_clear();
         
         clear_requested = false;
@@ -113,15 +121,9 @@ main(int argc, char *argv[])
                 clear_requested = true;
         }
         
-        // should_clear = clear_requested && !should_clear;
+        ticks = graphics_millis();
+        graphics_render();
 
-        delta = (graphics_millis() - ticks);
-        if (delta >= MAIN_THREAD_WAIT) {
-            ticks = graphics_millis();
-            graphics_render();
-        }
-
-        graphics_msleep(1);
     }
 
 
